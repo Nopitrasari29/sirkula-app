@@ -1,0 +1,62 @@
+[
+  {
+    "id": "loc-1",
+    "name": "Bank Sampah Sukolilo (Mitra Utama Kampus)",
+    "type": "Bank Sampah",
+    "address": "Jl. Teknik Kimia Gg. Melati No.12, Sukolilo, Surabaya",
+    "distanceKm": 1.2,
+    "campusArea": "Zona Kampus ITS Sukolilo",
+    "acceptedCategories": ["anorganik_daur_ulang", "b3", "organik"],
+    "operatingHours": "Senin - Sabtu: 08.00 - 16.00 WIB",
+    "phoneWhatsapp": "081234567890",
+    "rating": 4.8,
+    "lat": -7.2825,
+    "lng": 112.7944,
+    "pricePerKgRange": "Rp 3.500 - Rp 15.000 / kg"
+  },
+  {
+    "id": "loc-2",
+    "name": "Pengepul Pak Budi (Spesialis Kardus & Botol Kos)",
+    "type": "Pengepul Independen",
+    "address": "Jl. Keputih Tengah No. 45, Sukolilo, Surabaya",
+    "distanceKm": 0.8,
+    "campusArea": "Area Kos Keputih",
+    "acceptedCategories": ["anorganik_daur_ulang"],
+    "operatingHours": "Setiap Hari: 07.00 - 18.00 WIB",
+    "phoneWhatsapp": "085698765432",
+    "rating": 4.8,
+    "lat": -7.2912,
+    "lng": 112.8021,
+    "pricePerKgRange": "Rp 4.000 - Rp 8.000 / kg"
+  },
+  {
+    "id": "loc-3",
+    "name": "TPS3R Semolowaru Ramah Lingkungan & Kompos",
+    "type": "TPS3R",
+    "address": "Jl. Semolowaru Bahari No. 4, Sukolilo, Surabaya",
+    "distanceKm": 1.5,
+    "campusArea": "Zona Kos Semolowaru",
+    "acceptedCategories": ["organik", "anorganik_daur_ulang"],
+    "operatingHours": "Senin - Sabtu: 08.00 - 15.00 WIB",
+    "phoneWhatsapp": "087711223344",
+    "rating": 4.7,
+    "lat": -7.2980,
+    "lng": 112.7810,
+    "pricePerKgRange": "Rp 2.000 - Rp 6.000 / kg"
+  },
+  {
+    "id": "loc-4",
+    "name": "Drop Point E-Waste & B3 Kos Arief Rahman Hakim",
+    "type": "Drop Point Kos",
+    "address": "Jl. Arief Rahman Hakim No. 102, Sukolilo, Surabaya",
+    "distanceKm": 1.6,
+    "campusArea": "Pusat Kos Mahasiswa AR Hakim",
+    "acceptedCategories": ["b3"],
+    "operatingHours": "24 Jam Nonstop",
+    "phoneWhatsapp": "082199887766",
+    "rating": 5.0,
+    "lat": -7.2840,
+    "lng": 112.7850,
+    "pricePerKgRange": "Reward Poin Sirkula Extra"
+  }
+]

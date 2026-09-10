@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "question": "Manakah di bawah ini yang termasuk langkah awal terbaik saat memilah botol plastik PET bekas minum di kos sebelum disetor?",
+    "options": [
+      "Membakar botol agar ukurannya mengecil",
+      "Membilas bersih sisa air/manis dan memipihkan botol",
+      "Langsung membuangnya tercampur dengan sisa makanan berkuah",
+      "Memotong botol menjadi serpihan mikro plastik"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Membilas sisa cairan mencegah bau & mikroba, sementara memipihkan botol menghemat ruang penyimpanan di kos maupun saat diangkut pengepul.",
+    "points": 25
+  },
+  {
+    "id": 2,
+    "question": "Mengapa baterai jam dinding atau baterai laptop bekas dikategorikan sebagai sampah B3 (Bahan Berbahaya dan Beracun)?",
+    "options": [
+      "Karena mudah pecah jika terbentur",
+      "Karena bentuknya silinder dan keras",
+      "Karena mengandung logam berat seperti Merkuri & Timbal yang beracun bagi air tanah",
+      "Karena memiliki warna menarik yang disukai hewan"
+    ],
+    "correctAnswer": 2,
+    "explanation": "Baterai mengandung racun kimia berat yang dapat merembes ke air tanah jika dibuang begitu saja ke TPA konvensional.",
+    "points": 25
+  },
+  {
+    "id": 3,
+    "question": "Berapa rasio kesetaraan dampak ekologis sederhana yang umum digunakan Sirkula saat kamu berhasil mendaur ulang 10 kg sampah kertas/plastik?",
+    "options": [
+      "Setara menyelamatkan 1 pohon kecil & mengurangi emisi CO2",
+      "Setara dengan mematikan listrik selama 1 tahun",
+      "Tidak ada dampak ekologis sama sekali",
+      "Setara mengganti 100 liter bensin kendaraan"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Setiap 10 kg kertas/plastik yang terdaur ulang setara dengan menahan penebangan 1 pohon serta mencegah pelepasan emisi rumah kaca.",
+    "points": 25
+  },
+  {
+    "id": 4,
+    "question": "Apa fungsi utama fitur Peta & Booking pada aplikasi Sirkula bagi anak kos?",
+    "options": [
+      "Mencari tempat makan kos paling murah",
+      "Menjadwalkan penjemputan sampah terpilah oleh pengepul/bank sampah terdekat",
+      "Memesan makanan ojek online",
+      "Menghitung sewa bulanan kamar kos"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Fitur Peta & Booking memudahkan anak kos yang sibuk kuliah untuk menentukan jadwal jam jemput sampah tanpa harus mendatangi lokasi pengepul secara manual.",
+    "points": 25
+  }
+]

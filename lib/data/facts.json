@@ -1,0 +1,38 @@
+[
+  {
+    "id": "fact-1",
+    "title": "Berapa Lama Botol Plastik Kos Bertahan?",
+    "category": "Mitos vs Fakta",
+    "content": "Satu botol air mineral PET bekas minum di meja belajar kos butuh waktu hingga 450 tahun untuk terurai di alam jika tidak didaur ulang!",
+    "impactTag": "450 Tahun Degradasi",
+    "source": "Kementerian Lingkungan Hidup & Kehutanan",
+    "icon": "HelpCircle"
+  },
+  {
+    "id": "fact-2",
+    "title": "Kardus Bekas Paket Online shop Kos",
+    "category": "Daur Ulang",
+    "content": "Daur ulang 1 ton kardus bekas belanjaan online dapat menyelamatkan 17 pohon dewasa dan menghemat 26.000 liter air!",
+    "impactTag": "17 Pohon Saved / Ton",
+    "source": "Environmental Protection Agency",
+    "icon": "Package"
+  },
+  {
+    "id": "fact-3",
+    "title": "Baterai Bekas Jangan Dibuang ke Tong Sampah Biasa!",
+    "category": "Bahaya B3",
+    "content": "Baterai bekas jam/laptop mengandung logam berat Kadmium dan Merkuri yang bisa mencemari 20.000 liter air tanah jika bocor di TPA.",
+    "impactTag": "Cemar 20.000L Air",
+    "source": "Pusat Studi Lingkungan Hidup",
+    "icon": "Zap"
+  },
+  {
+    "id": "fact-4",
+    "title": "Sisa Kuah Makanan Kos & Gas Metana",
+    "category": "Sampah Organik",
+    "content": "Sampah organik makanan yang membusuk tanpa udara di TPA menghasilkan gas Metana yang 28 kali lebih kuat memicu pemanasan global dibanding CO2.",
+    "impactTag": "28x Efek Rumah Kaca",
+    "source": "IPCC Climate Report",
+    "icon": "Flame"
+  }
+]

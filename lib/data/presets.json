@@ -1,0 +1,47 @@
+[
+  {
+    "id": "sample-pet",
+    "name": "Botol Air Mineral PET 600ml",
+    "category": "anorganik_daur_ulang",
+    "imageUrl": "https://images.unsplash.com/photo-1605600659873-d808a13e4d2a?auto=format&fit=crop&q=80&w=400",
+    "estimatedWeight": 0.35,
+    "description": "Botol plastik bening bersih bertanda logo segitiga daur ulang angka 1 (PET/PETE).",
+    "resaleValue": 1500
+  },
+  {
+    "id": "sample-kardus",
+    "name": "Kardus Paket Belanjaan Online Kos",
+    "category": "anorganik_daur_ulang",
+    "imageUrl": "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&q=80&w=400",
+    "estimatedWeight": 1.2,
+    "description": "Kardus gelombang (corrugated box) kondisi kering bekas paket e-commerce.",
+    "resaleValue": 4800
+  },
+  {
+    "id": "sample-kaleng",
+    "name": "Kaleng Minuman Aluminium Soda",
+    "category": "anorganik_daur_ulang",
+    "imageUrl": "https://images.unsplash.com/photo-1527960471264-932f39eb5846?auto=format&fit=crop&q=80&w=400",
+    "estimatedWeight": 0.4,
+    "description": "Kaleng aluminium minuman dingin berharga jual tinggi di pengepul lokal.",
+    "resaleValue": 3200
+  },
+  {
+    "id": "sample-organik",
+    "name": "Sisa Buah & Kulit Pisang Kos",
+    "category": "organik",
+    "imageUrl": "https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&q=80&w=400",
+    "estimatedWeight": 0.8,
+    "description": "Sampah dapur / sisa konsumsi buah dan sayuran anak kos.",
+    "resaleValue": 1200
+  },
+  {
+    "id": "sample-baterai",
+    "name": "Baterai AA Bekas Jam & Remote",
+    "category": "b3",
+    "imageUrl": "https://images.unsplash.com/photo-1619725002198-6a689b72f41d?auto=format&fit=crop&q=80&w=400",
+    "estimatedWeight": 0.25,
+    "description": "Sampah elektronik baterai primer B3 berisiko tinggi jika tercampur sampah umum.",
+    "resaleValue": 3000
+  }
+]

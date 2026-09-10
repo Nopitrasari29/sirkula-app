@@ -1,0 +1,63 @@
+[
+  {
+    "id": "anorganik_daur_ulang",
+    "name": "Anorganik Daur Ulang (Plastik, Kertas, Logam)",
+    "badgeColor": "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
+    "iconName": "Recycle",
+    "description": "Sampah yang bernilai ekonomis tinggi dan dapat didaur ulang menjadi bahan baku industri baru.",
+    "sortingTips": [
+      "Bersihkan dan keringkan sisa cairan/makanan pada wadah botol/kaleng.",
+      "Pipihkan botol plastik PET atau dus kardus untuk menghemat ruang penyimpanan.",
+      "Pisahkan Tutup botol dari badan botol jika memungkinkan.",
+      "Kumpulkan dalam wadah kering khusus kos sebelum disetor ke pengepul."
+    ],
+    "estimatedPricePerKg": 4500,
+    "co2SavedPerKg": 1.8,
+    "pointsPerKg": 50
+  },
+  {
+    "id": "organik",
+    "name": "Sampah Organik (Sisa Makanan & Dedaunan)",
+    "badgeColor": "bg-green-600/20 text-green-400 border-green-600/40",
+    "iconName": "Leaf",
+    "description": "Sampah yang mudah terurai secara hayati dan cocok untuk kompos atau pakan maggot.",
+    "sortingTips": [
+      "Tiriskan air/kuah dari sisa makanan kos agar tidak menimbulkan bau menyengat.",
+      "Jangan campur dengan plastik klip, sendok plastik, atau tisu berminyak.",
+      "Cacah sisa sayur/buah jika ingin mengolahnya di komposter kos sederhana."
+    ],
+    "estimatedPricePerKg": 1500,
+    "co2SavedPerKg": 0.8,
+    "pointsPerKg": 30
+  },
+  {
+    "id": "b3",
+    "name": "Bahan Berbahaya & Beracun (B3 / E-Waste)",
+    "badgeColor": "bg-rose-500/20 text-rose-400 border-rose-500/40",
+    "iconName": "Zap",
+    "description": "Sampah elektronik, baterai bekas, lampu, dan kemasan bahan kimia yang memerlukan penanganan khusus.",
+    "sortingTips": [
+      "Simpan dalam kotak terpisah berlabel B3 dan hindari paparan air.",
+      "Tutup kutub baterai bekas dengan selotip bening untuk mencegah korsleting.",
+      "Setorkan ke Drop Point Khusus B3 di kampus atau bank sampah resmi."
+    ],
+    "estimatedPricePerKg": 12000,
+    "co2SavedPerKg": 3.2,
+    "pointsPerKg": 100
+  },
+  {
+    "id": "anorganik_non_daur_ulang",
+    "name": "Anorganik Residuo / Non-Daur Ulang",
+    "badgeColor": "bg-slate-500/20 text-slate-400 border-slate-500/40",
+    "iconName": "Trash2",
+    "description": "Sampah kemasan saset multilayer, plastik styrofoam, dan pembalut yang sulit didaur ulang secara konvensional.",
+    "sortingTips": [
+      "Bersihkan dari minyak/kotoran kotor.",
+      "Bisa dikumpulkan untuk bahan Ecobrick kreatif kos.",
+      "Jika tidak di-ecobrick, buang ke pembuangan residu resmi."
+    ],
+    "estimatedPricePerKg": 500,
+    "co2SavedPerKg": 0.3,
+    "pointsPerKg": 15
+  }
+]
