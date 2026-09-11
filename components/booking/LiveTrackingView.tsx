@@ -145,7 +145,6 @@ export default function LiveTrackingView({
         >
           <ChevronLeft className="w-5 h-5" />
           <span className="text-base sm:text-lg font-display">Lihat Tracking</span>
-          <span className="text-emerald-700">🌿</span>
         </button>
 
         <p className="text-xs text-[#1C4D38]/70 font-medium hidden sm:block">

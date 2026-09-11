@@ -8,6 +8,7 @@ interface ScrollRevealProps {
   delay?: number;
   duration?: number;
   className?: string;
+  once?: boolean;
 }
 
 export default function ScrollReveal({
@@ -16,32 +17,42 @@ export default function ScrollReveal({
   delay = 0,
   duration = 700,
   className = '',
+  once = true,
 }: ScrollRevealProps) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // If already in viewport on mount, reveal immediately
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setIsVisible(true);
+      if (once) return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-        } else {
-          // Re-trigger when scrolling back out/in
+          if (once) {
+            observer.unobserve(entry.target);
+          }
+        } else if (!once) {
           setIsVisible(false);
         }
       },
       {
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px',
+        threshold: 0.05,
+        rootMargin: '0px 0px -20px 0px',
       }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
+    observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [once]);
 
   const getTransform = () => {
     if (isVisible) return 'translate3d(0, 0, 0) scale(1)';

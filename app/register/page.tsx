@@ -96,7 +96,7 @@ export default function RegisterPage() {
       setModalState({
         isOpen: true,
         type: 'success',
-        title: 'Pendaftaran Berhasil! 🎉',
+        title: 'Pendaftaran Berhasil!',
         message: 'Selamat datang di SIRKULA! Akun Anda telah berhasil dibuat.',
         confirmText: 'Masuk ke Dashboard',
         onConfirmRedirect: '/dashboard',

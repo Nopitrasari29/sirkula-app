@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   ChevronDown,
@@ -20,6 +20,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { EduMaterialCard } from './EduHubView';
+import { getBookmarkedEducation, toggleBookmarkedEducation } from '@/lib/utils/storage';
 
 export const ALL_MATERI_CATALOG: EduMaterialCard[] = [
   {
@@ -94,6 +95,7 @@ interface EduAllMateriViewProps {
   onSelectLesson: (lessonId: string) => void;
   onOpenAiRecommend: () => void;
   completedIds: string[];
+  initialTab?: 'Semua' | 'Video' | 'Artikel' | 'Infografis' | 'Panduan' | 'Tersimpan';
 }
 
 export default function EduAllMateriView({
@@ -101,17 +103,23 @@ export default function EduAllMateriView({
   onSelectLesson,
   onOpenAiRecommend,
   completedIds,
+  initialTab,
 }: EduAllMateriViewProps) {
-  const [activeTab, setActiveTab] = useState<'Semua' | 'Video' | 'Artikel' | 'Infografis' | 'Panduan'>('Semua');
+  const [activeTab, setActiveTab] = useState<'Semua' | 'Video' | 'Artikel' | 'Infografis' | 'Panduan' | 'Tersimpan'>(
+    initialTab || 'Semua'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [bookmarkedList, setBookmarkedList] = useState<string[]>([]);
 
+  useEffect(() => {
+    setBookmarkedList(getBookmarkedEducation());
+  }, []);
+
   const toggleBookmark = (id: string) => {
-    setBookmarkedList((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    const updated = toggleBookmarkedEducation(id);
+    setBookmarkedList(updated);
   };
 
   const toggleFilter = (list: string[], setList: (l: string[]) => void, item: string) => {
@@ -119,7 +127,10 @@ export default function EduAllMateriView({
   };
 
   const filteredMateri = ALL_MATERI_CATALOG.filter((mat) => {
-    const matchType = activeTab === 'Semua' || mat.type === activeTab;
+    const matchType =
+      activeTab === 'Tersimpan'
+        ? bookmarkedList.includes(mat.id)
+        : activeTab === 'Semua' || mat.type === activeTab;
     const matchSearch =
       mat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       mat.desc.toLowerCase().includes(searchQuery.toLowerCase());
@@ -134,7 +145,7 @@ export default function EduAllMateriView({
   return (
     <div className="space-y-6">
       
-      {/* 🧭 Breadcrumb & Header */}
+      {/* Breadcrumb & Header */}
       <div className="space-y-1">
         <div className="flex items-center gap-2 text-xs font-bold text-[#1C4D38]/60">
           <button
@@ -145,19 +156,22 @@ export default function EduAllMateriView({
             Edukasi
           </button>
           <span>&gt;</span>
-          <span className="text-[#1C4D38] font-black">Materi Terbaru</span>
+          <span className="text-[#1C4D38] font-black">
+            {activeTab === 'Tersimpan' ? 'Materi Tersimpan' : 'Materi Terbaru'}
+          </span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-[#1C4D38] font-display flex items-center gap-2">
-          <span>Materi Terbaru</span>
-          <span>📖</span>
+          <span>{activeTab === 'Tersimpan' ? 'Materi Tersimpan' : 'Materi Terbaru'}</span>
         </h2>
         <p className="text-xs text-[#1C4D38]/70 font-medium">
-          Temukan berbagai materi edukasi terbaru seputar pengelolaan sampah, daur ulang, gaya hidup hijau, dan isu lingkungan.
+          {activeTab === 'Tersimpan'
+            ? 'Koleksi materi edukasi yang telah kamu simpan agar mudah dipelajari kembali kapan saja.'
+            : 'Temukan berbagai materi edukasi terbaru seputar pengelolaan sampah, daur ulang, gaya hidup hijau, dan isu lingkungan.'}
         </p>
       </div>
 
-      {/* 🔍 Top Search & Filter Bar */}
+      {/* Top Search & Filter Bar */}
       <div className="bg-white border border-[#1C4D38]/10 rounded-2xl p-3 shadow-2xs space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2.5">
           <div className="relative flex-1">
@@ -180,6 +194,7 @@ export default function EduAllMateriView({
               <option value="Semua">Semua Tipe</option>
               <option value="Video">Video</option>
               <option value="Artikel">Artikel</option>
+              <option value="Tersimpan">Tersimpan ({bookmarkedList.length})</option>
             </select>
 
             <select className="px-3 py-2 bg-[#FAF5ED] border border-[#1C4D38]/10 rounded-xl text-xs font-bold text-[#1C4D38] cursor-pointer">
@@ -203,7 +218,7 @@ export default function EduAllMateriView({
         </div>
 
         {/* Tab Pills */}
-        <div className="flex items-center gap-2 pt-1 border-t border-[#1C4D38]/10">
+        <div className="flex items-center gap-2 pt-1 border-t border-[#1C4D38]/10 overflow-x-auto">
           {(
             [
               { id: 'Semua', label: 'Semua (46)' },
@@ -211,6 +226,7 @@ export default function EduAllMateriView({
               { id: 'Artikel', label: 'Artikel (18)' },
               { id: 'Infografis', label: 'Infografis (5)' },
               { id: 'Panduan', label: 'Panduan (3)' },
+              { id: 'Tersimpan', label: `Tersimpan (${bookmarkedList.length})`, hasIcon: true },
             ] as const
           ).map((t) => {
             const isSelected = activeTab === t.id;
@@ -218,14 +234,17 @@ export default function EduAllMateriView({
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setActiveTab(t.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
+                onClick={() => setActiveTab(t.id as any)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
                   isSelected
                     ? 'bg-[#1C4D38] text-white shadow-2xs'
                     : 'bg-[#FAF5ED] text-[#1C4D38]/80 hover:bg-[#FAF3E5]'
                 }`}
               >
-                {t.label}
+                {'hasIcon' in t && t.hasIcon && (
+                  <Bookmark className={`w-3.5 h-3.5 ${isSelected ? 'text-[#FCE39E]' : 'text-[#1C4D38]/70'}`} />
+                )}
+                <span>{t.label}</span>
               </button>
             );
           })}
@@ -241,92 +260,118 @@ export default function EduAllMateriView({
             {filteredMateri.length} materi ditemukan
           </p>
 
-          <div className="space-y-3.5">
-            {filteredMateri.map((mat) => {
-              const isDone = completedIds.includes(mat.id);
-              const isBookmarked = bookmarkedList.includes(mat.id);
-              return (
-                <div
-                  key={mat.id}
-                  onClick={() => onSelectLesson(mat.id)}
-                  className="p-4 bg-white border border-[#1C4D38]/10 rounded-[24px] shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col sm:flex-row items-stretch sm:items-center gap-4 group"
+          {filteredMateri.length === 0 ? (
+            <div className="p-8 text-center bg-white border border-[#1C4D38]/10 rounded-[28px] shadow-2xs space-y-3">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-[#FAF5ED] flex items-center justify-center text-[#1C4D38] border border-[#1C4D38]/10">
+                <Bookmark className="w-6 h-6 text-[#1C4D38]" />
+              </div>
+              <h4 className="text-sm font-black text-[#1C4D38] font-display">
+                {activeTab === 'Tersimpan' ? 'Belum Ada Materi Tersimpan' : 'Materi Tidak Ditemukan'}
+              </h4>
+              <p className="text-xs text-[#1C4D38]/70 max-w-md mx-auto leading-relaxed">
+                {activeTab === 'Tersimpan'
+                  ? 'Kamu belum menyimpan materi apa pun. Klik ikon bookmark pada kartu materi untuk menyimpannya di sini agar mudah dibaca kembali.'
+                  : 'Coba ubah kata kunci pencarian atau sesuaikan filter untuk menemukan materi yang kamu cari.'}
+              </p>
+              {activeTab === 'Tersimpan' && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('Semua')}
+                  className="px-5 py-2.5 bg-[#1C4D38] hover:bg-[#143929] text-white text-xs font-black rounded-xl shadow-md transition cursor-pointer"
                 >
-                  {/* Left Thumbnail with Duration */}
-                  <div className="w-full sm:w-44 h-28 bg-[#FAF5ED] rounded-2xl relative overflow-hidden flex items-center justify-center p-2 shrink-0">
-                    <img
-                      src={mat.image}
-                      alt={mat.title}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                    />
+                  Jelajahi Semua Materi
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3.5">
+              {filteredMateri.map((mat) => {
+                const isDone = completedIds.includes(mat.id);
+                const isBookmarked = bookmarkedList.includes(mat.id);
+                return (
+                  <div
+                    key={mat.id}
+                    onClick={() => onSelectLesson(mat.id)}
+                    className="p-4 bg-white border border-[#1C4D38]/10 rounded-[24px] shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col sm:flex-row items-stretch sm:items-center gap-4 group"
+                  >
+                    {/* Left Thumbnail with Duration */}
+                    <div className="w-full sm:w-44 h-28 bg-[#FAF5ED] rounded-2xl relative overflow-hidden flex items-center justify-center p-2 shrink-0">
+                      <img
+                        src={mat.image}
+                        alt={mat.title}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
 
-                    {mat.type === 'Video' && (
-                      <div className="absolute inset-0 bg-black/15 flex items-center justify-center">
-                        <div className="w-8 h-8 rounded-full bg-white/90 text-[#1C4D38] flex items-center justify-center shadow-xs">
-                          <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                      {mat.type === 'Video' && (
+                        <div className="absolute inset-0 bg-black/15 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-white/90 text-[#1C4D38] flex items-center justify-center shadow-xs">
+                            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                          </div>
                         </div>
+                      )}
+
+                      <span className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/70 text-white text-[9px] font-black rounded">
+                        {mat.duration}
+                      </span>
+
+                      {isDone && (
+                        <span className="absolute top-2 left-2 px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-black rounded-full">
+                          ✓ Selesai
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Center Content */}
+                    <div className="flex-1 space-y-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2 py-0.5 bg-[#D1EBE1] text-[#1C4D38] text-[9px] font-black rounded">
+                          {mat.type}
+                        </span>
+                        <span className="px-2 py-0.5 bg-[#FAF3E5] text-[#9B6A1B] text-[9px] font-black rounded">
+                          {mat.level}
+                        </span>
                       </div>
-                    )}
 
-                    <span className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/70 text-white text-[9px] font-black rounded">
-                      {mat.duration}
-                    </span>
+                      <h4 className="text-sm font-black text-[#1C4D38] font-display group-hover:text-emerald-800 transition-colors">
+                        {mat.title}
+                      </h4>
 
-                    {isDone && (
-                      <span className="absolute top-2 left-2 px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-black rounded-full">
-                        ✓ Selesai
-                      </span>
-                    )}
-                  </div>
+                      <p className="text-xs text-[#1C4D38]/70 font-medium line-clamp-2 leading-relaxed">
+                        {mat.desc}
+                      </p>
 
-                  {/* Center Content */}
-                  <div className="flex-1 space-y-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 bg-[#D1EBE1] text-[#1C4D38] text-[9px] font-black rounded">
-                        {mat.type}
-                      </span>
-                      <span className="px-2 py-0.5 bg-[#FAF3E5] text-[#9B6A1B] text-[9px] font-black rounded">
-                        {mat.level}
-                      </span>
+                      <div className="flex items-center gap-3 text-[10px] text-[#1C4D38]/60 font-bold pt-1">
+                        <span>{mat.date}</span>
+                        <span>•</span>
+                        <span>{mat.views}</span>
+                        <span>•</span>
+                        <span className="text-[#E07A5F] font-black">+{mat.points} poin</span>
+                      </div>
                     </div>
 
-                    <h4 className="text-sm font-black text-[#1C4D38] font-display group-hover:text-emerald-800 transition-colors">
-                      {mat.title}
-                    </h4>
-
-                    <p className="text-xs text-[#1C4D38]/70 font-medium line-clamp-2 leading-relaxed">
-                      {mat.desc}
-                    </p>
-
-                    <div className="flex items-center gap-3 text-[10px] text-[#1C4D38]/60 font-bold pt-1">
-                      <span>{mat.date}</span>
-                      <span>•</span>
-                      <span>{mat.views}</span>
-                      <span>•</span>
-                      <span className="text-[#E07A5F] font-black">+{mat.points} poin</span>
+                    {/* Right Action Icons */}
+                    <div className="flex sm:flex-col items-center justify-end gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleBookmark(mat.id);
+                        }}
+                        className={`p-2 rounded-xl transition cursor-pointer ${
+                          isBookmarked
+                            ? 'bg-[#1C4D38] text-white'
+                            : 'bg-[#FAF5ED] hover:bg-gray-200 text-[#1C4D38]'
+                        }`}
+                        title={isBookmarked ? 'Hapus dari Simpanan' : 'Simpan Materi'}
+                      >
+                        <Bookmark className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
-
-                  {/* Right Action Icons */}
-                  <div className="flex sm:flex-col items-center justify-end gap-2 shrink-0">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleBookmark(mat.id);
-                      }}
-                      className={`p-2 rounded-xl transition cursor-pointer ${
-                        isBookmarked
-                          ? 'bg-[#1C4D38] text-white'
-                          : 'bg-[#FAF5ED] hover:bg-gray-200 text-[#1C4D38]'
-                      }`}
-                    >
-                      <Bookmark className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Pagination Bar */}
           <div className="flex items-center justify-between pt-4 border-t border-[#1C4D38]/10 text-xs">
@@ -386,9 +431,9 @@ export default function EduAllMateriView({
               <p className="text-[10px] font-black text-[#1C4D38]/60 uppercase">Tingkat Kesulitan</p>
               <div className="space-y-1.5 text-xs text-[#1C4D38]/90 font-medium">
                 {[
-                  { id: 'Pemula', label: 'Pemula', count: 23, icon: '🌱' },
-                  { id: 'Menengah', label: 'Menengah', count: 15, icon: '🌿' },
-                  { id: 'Lanjutan', label: 'Lanjutan', count: 8, icon: '🌳' },
+                  { id: 'Pemula', label: 'Pemula', count: 23 },
+                  { id: 'Menengah', label: 'Menengah', count: 15 },
+                  { id: 'Lanjutan', label: 'Lanjutan', count: 8 },
                 ].map((item) => (
                   <label key={item.id} className="flex items-center justify-between cursor-pointer py-0.5">
                     <div className="flex items-center gap-2">
@@ -398,7 +443,7 @@ export default function EduAllMateriView({
                         onChange={() => toggleFilter(selectedDifficulty, setSelectedDifficulty, item.id)}
                         className="rounded text-[#1C4D38] focus:ring-[#1C4D38]"
                       />
-                      <span>{item.icon} {item.label}</span>
+                      <span>{item.label}</span>
                     </div>
                     <span className="text-[10px] font-bold text-[#1C4D38]/50">{item.count}</span>
                   </label>

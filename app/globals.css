@@ -138,3 +138,29 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #1C4D38 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+/* Hilangkan kotak hitam browser focus outline pada Recharts SVG / Diagram */
+.recharts-pie-sector,
+.recharts-pie-sector:focus,
+.recharts-pie-sector:focus-visible,
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-sector,
+.recharts-sector:focus,
+.recharts-sector:focus-visible,
+.recharts-layer:focus,
+.recharts-layer:focus-visible,
+svg:focus,
+svg:focus-visible,
+path:focus,
+path:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+

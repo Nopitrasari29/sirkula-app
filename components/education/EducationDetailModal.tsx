@@ -21,7 +21,7 @@ import {
   Clock,
   ArrowRight,
 } from 'lucide-react';
-import { addPoints, getCompletedEducation, markEducationCompleted } from '@/lib/utils/storage';
+import { addPoints, getCompletedEducation, markEducationCompleted, getBookmarkedEducation, toggleBookmarkedEducation } from '@/lib/utils/storage';
 import CustomAlertModal from '@/components/ui/CustomAlertModal';
 
 export interface EducationItem {
@@ -79,6 +79,7 @@ export default function EducationDetailModal({
       setProgress(item.type === 'Video' ? 35 : 100);
       const completedList = getCompletedEducation();
       setIsClaimed(completedList.includes(item.id));
+      setIsBookmarked(getBookmarkedEducation().includes(item.id));
       setShowQuiz(false);
       setSelectedOption(null);
       setQuizSubmitted(false);
@@ -155,11 +156,14 @@ export default function EducationDetailModal({
             {/* Bookmark */}
             <button
               type="button"
-              onClick={() => setIsBookmarked(!isBookmarked)}
+              onClick={() => {
+                const updated = toggleBookmarkedEducation(item.id);
+                setIsBookmarked(updated.includes(item.id));
+              }}
               className={`p-2 rounded-full transition cursor-pointer ${
                 isBookmarked ? 'bg-[#FCE39E] text-[#1C4D38]' : 'hover:bg-gray-100 text-[#1C4D38]/60'
               }`}
-              title="Simpan Materi"
+              title={isBookmarked ? 'Hapus dari Simpanan' : 'Simpan Materi'}
             >
               <Bookmark className="w-4 h-4 fill-current" />
             </button>
@@ -256,8 +260,9 @@ export default function EducationDetailModal({
                 alt={item.title}
                 className="w-full h-full object-contain filter drop-shadow-sm hover:scale-105 transition-transform duration-300"
               />
-              <div className="absolute bottom-3 right-3 bg-[#FAF5ED]/90 backdrop-blur-xs px-3 py-1 rounded-full text-[10px] font-extrabold text-[#1C4D38] border border-[#1C4D38]/10">
-                📖 Waktu baca: {item.readTime || '3 menit'}
+              <div className="absolute bottom-3 right-3 bg-[#FAF5ED]/90 backdrop-blur-xs px-3 py-1 rounded-full text-[10px] font-extrabold text-[#1C4D38] border border-[#1C4D38]/10 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Waktu baca: {item.readTime || '3 menit'}</span>
               </div>
             </div>
           )}
@@ -376,7 +381,7 @@ export default function EducationDetailModal({
               ) : (
                 <div className="p-3 bg-[#EBF5F0] rounded-xl text-[11px] text-[#1C4D38] space-y-1">
                   <p className="font-extrabold flex items-center gap-1.5">
-                    {selectedOption === item.quiz.correctIndex ? '🎉 Jawabanmu Tepat Sekali!' : '💡 Jawaban Belum Tepat'}
+                    {selectedOption === item.quiz.correctIndex ? 'Jawabanmu Tepat Sekali!' : 'Jawaban Belum Tepat'}
                   </p>
                   <p className="text-[#1C4D38]/80 font-medium leading-relaxed">
                     {item.quiz.explanation}

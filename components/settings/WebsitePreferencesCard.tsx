@@ -101,7 +101,7 @@ export default function WebsitePreferencesCard({
               className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-extrabold text-[#1C4D38] focus:outline-none focus:ring-2 focus:ring-[#1C4D38]/20"
             >
               {location && !['Sukolilo, Surabaya', 'Keputih, Surabaya', 'Mulyorejo, Surabaya', 'Gubeng, Surabaya'].includes(location) && (
-                <option value={location}>📍 {location} (Lokasi Terdeteksi)</option>
+                <option value={location}>{location} (Lokasi Terdeteksi)</option>
               )}
               <option value="Sukolilo, Surabaya">Sukolilo, Surabaya</option>
               <option value="Keputih, Surabaya">Keputih, Surabaya</option>

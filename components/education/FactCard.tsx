@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { FunFact } from '../../lib/types';
-import { ChevronLeft, ChevronRight, HelpCircle, Package, Zap, Flame, Sparkles, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, HelpCircle, Package, Zap, Flame, Sparkles, BookOpen, Lightbulb } from 'lucide-react';
 
 interface FactCardProps {
   facts: FunFact[];
@@ -64,8 +64,9 @@ export default function FactCard({ facts }: FactCardProps) {
         <p className="text-sm text-slate-200 leading-relaxed font-medium">{currentFact.content || currentFact.summary}</p>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-4 border-t border-slate-800 text-xs">
-          <span className="font-extrabold text-emerald-400 bg-emerald-950 px-3 py-1 rounded-lg border border-emerald-500/30 inline-block w-fit">
-            💡 {currentFact.impactTag || 'Tips Pemilahan Sampah'}
+          <span className="font-extrabold text-emerald-400 bg-emerald-950 px-3 py-1 rounded-lg border border-emerald-500/30 inline-flex items-center gap-1.5 w-fit">
+            <Lightbulb className="w-3.5 h-3.5 text-emerald-400" />
+            <span>{currentFact.impactTag || 'Tips Pemilahan Sampah'}</span>
           </span>
           <span className="text-slate-400 text-[11px]">Sumber: {currentFact.source || 'Tim Riset SIRKULA'}</span>
         </div>

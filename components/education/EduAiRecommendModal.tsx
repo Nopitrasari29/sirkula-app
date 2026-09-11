@@ -52,9 +52,8 @@ export default function EduAiRecommendModal({
             <Bot className="w-6 h-6 text-emerald-800" />
           </div>
           <div>
-            <h3 className="text-base font-black text-[#1C4D38] font-display flex items-center gap-1.5">
-              <span>Rekomendasi AI SIRKULA</span>
-              <Sparkles className="w-4 h-4 text-[#E07A5F]" />
+            <h3 className="text-base font-black text-[#1C4D38] font-display">
+              Rekomendasi Pintar SIRKULA
             </h3>
             <p className="text-xs text-[#1C4D38]/70 font-medium">
               Asisten pintar kurasi materi belajar sesuai minat & kebutuhanmu

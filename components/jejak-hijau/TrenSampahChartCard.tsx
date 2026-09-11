@@ -81,7 +81,7 @@ export default function TrenSampahChartCard() {
       {/* Line Chart Area */}
       <div className="w-full h-48 sm:h-52 relative">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} style={{ outline: 'none' }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1C4D38" strokeOpacity={0.1} />
             <XAxis
               dataKey="day"
@@ -96,15 +96,35 @@ export default function TrenSampahChartCard() {
               domain={[0, 20]}
             />
             <Tooltip
-              contentStyle={{
-                backgroundColor: '#1C4D38',
-                borderRadius: '12px',
-                color: '#FFFFFF',
-                fontSize: '11px',
-                fontWeight: 'bold',
-                border: 'none',
+              cursor={{ stroke: '#1C4D38', strokeWidth: 1.5, strokeDasharray: '4 4', strokeOpacity: 0.4 }}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const val = payload[0].value !== undefined ? payload[0].value : 0;
+                  const dayMap: Record<string, string> = {
+                    Sen: 'Senin',
+                    Sel: 'Selasa',
+                    Rab: 'Rabu',
+                    Kam: 'Kamis',
+                    Jum: 'Jumat',
+                    Sab: 'Sabtu',
+                    Min: 'Minggu',
+                    Mei: 'Bulan Mei',
+                    Jun: 'Bulan Juni',
+                    Jul: 'Bulan Juli',
+                    Ags: 'Bulan Agustus',
+                  };
+                  const fullDay = dayMap[String(label)] || label;
+                  return (
+                    <div className="bg-[#1C4D38] text-white px-3.5 py-2 rounded-xl shadow-xl border border-white/20 text-xs pointer-events-none space-y-0.5">
+                      <p className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">{fullDay}</p>
+                      <p className="text-sm font-black text-white">
+                        {val} <span className="text-xs font-medium text-white/80">kg terkelola</span>
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
               }}
-              formatter={(val: number) => [`${val} kg`, 'Sampah']}
             />
             <Line
               type="monotone"

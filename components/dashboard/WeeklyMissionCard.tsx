@@ -82,7 +82,7 @@ export default function WeeklyMissionCard() {
             </p>
             <p className="text-lg font-black text-[#1C4D38] font-display leading-tight mt-0.5">
               {isCompleted ? (
-                <span className="text-emerald-700 text-sm font-black">Tercapai! (+100 Poin) 🎉</span>
+                <span className="text-emerald-700 text-sm font-black">Tercapai! (+100 Poin)</span>
               ) : (
                 <>
                   +100 <span className="text-xs font-semibold text-[#1C4D38]/80">poin</span>

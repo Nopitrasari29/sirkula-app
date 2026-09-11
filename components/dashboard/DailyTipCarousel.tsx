@@ -2,16 +2,23 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lightbulb, Recycle, Zap, Leaf } from 'lucide-react';
 
 import factsData from '@/lib/data/facts.json';
 
-const EMOJI_MAP: Record<string, string> = {
-  'Mitos vs Fakta': '💡',
-  'Daur Ulang': '♻️',
-  'Bahaya B3': '⚡',
-  'Sampah Organik': '🌿',
-};
+function getCategoryIcon(cat: string) {
+  switch (cat) {
+    case 'Daur Ulang':
+      return <Recycle className="w-10 h-10 text-emerald-800" />;
+    case 'Bahaya B3':
+      return <Zap className="w-10 h-10 text-amber-800" />;
+    case 'Sampah Organik':
+      return <Leaf className="w-10 h-10 text-emerald-800" />;
+    case 'Mitos vs Fakta':
+    default:
+      return <Lightbulb className="w-10 h-10 text-[#9B6A1B]" />;
+  }
+}
 
 export default function DailyTipCarousel() {
   const [activeIdx, setActiveIdx] = useState(0);
@@ -23,7 +30,6 @@ export default function DailyTipCarousel() {
     desc: fact.content,
     link: '/edukasi',
     iconImg: null as string | null,
-    iconEmoji: EMOJI_MAP[fact.category] || '💡',
     impactTag: fact.impactTag,
     category: fact.category,
   }));
@@ -69,7 +75,9 @@ export default function DailyTipCarousel() {
                   className="w-full h-full object-contain filter drop-shadow-xs"
                 />
               ) : (
-                <span className="text-4xl">{currentTip.iconEmoji}</span>
+                <div className="w-16 h-16 rounded-2xl bg-white/70 flex items-center justify-center border border-[#1C4D38]/10 shadow-2xs">
+                  {getCategoryIcon(currentTip.category)}
+                </div>
               )}
             </div>
 

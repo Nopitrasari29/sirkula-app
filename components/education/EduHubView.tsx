@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   ChevronDown,
@@ -20,7 +20,9 @@ import {
   Flame,
   Lightbulb,
   Zap,
+  Bookmark,
 } from 'lucide-react';
+import { getBookmarkedEducation } from '@/lib/utils/storage';
 
 export interface EduMaterialCard {
   id: string;
@@ -157,7 +159,7 @@ export const TOPICS_OVERVIEW = [
 ];
 
 interface EduHubViewProps {
-  onNavigateToAllMateri: () => void;
+  onNavigateToAllMateri: (initialTab?: 'Semua' | 'Video' | 'Artikel' | 'Infografis' | 'Panduan' | 'Tersimpan') => void;
   onNavigateToTopics: () => void;
   onSelectTopic: (topicName: string) => void;
   onSelectLesson: (lessonId: string) => void;
@@ -176,6 +178,16 @@ export default function EduHubView({
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const [savedCount, setSavedCount] = useState(0);
+
+  useEffect(() => {
+    setSavedCount(getBookmarkedEducation().length);
+    const handleStorage = () => {
+      setSavedCount(getBookmarkedEducation().length);
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   const categories = ['Semua', 'Pengelolaan Sampah', 'Daur Ulang', 'Gaya Hidup Hijau', 'Lingkungan'];
 
@@ -326,21 +338,38 @@ export default function EduHubView({
 
           </div>
 
-          {/* 📰 Section 1: Materi Terbaru */}
+          {/* Section 1: Materi Terbaru */}
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <h3 className="text-base font-black text-[#1C4D38] font-display flex items-center gap-2">
                 <span>Materi Terbaru</span>
               </h3>
 
-              <button
-                type="button"
-                onClick={onNavigateToAllMateri}
-                className="text-xs font-black text-emerald-800 hover:text-emerald-950 flex items-center gap-1 cursor-pointer"
-              >
-                <span>Lihat Semua</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onNavigateToAllMateri('Tersimpan')}
+                  className="text-xs font-bold text-[#1C4D38] hover:text-emerald-950 flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-xl border border-[#1C4D38]/10 hover:border-emerald-600 shadow-2xs transition cursor-pointer"
+                  title="Buka Materi yang Disimpan"
+                >
+                  <Bookmark className="w-3.5 h-3.5 text-emerald-800" />
+                  <span>Materi Tersimpan</span>
+                  {savedCount > 0 && (
+                    <span className="px-1.5 py-0.2 bg-[#D1EBE1] text-[#1C4D38] text-[10px] font-black rounded-full">
+                      {savedCount}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onNavigateToAllMateri('Semua')}
+                  className="text-xs font-black text-emerald-800 hover:text-emerald-950 flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Lihat Semua</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* 4 Cards Grid */}
@@ -641,10 +670,10 @@ export default function EduHubView({
               <span className="text-[10px] font-black text-[#1C4D38]/70 uppercase">Badge Edukasi</span>
               <div className="flex items-center gap-1.5">
                 <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-black shadow-2xs">
-                  🌱
+                  <Award className="w-3.5 h-3.5" />
                 </div>
                 <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] font-black shadow-2xs">
-                  ⭐
+                  <Sparkles className="w-3.5 h-3.5" />
                 </div>
                 <span className="text-xs font-black text-[#1C4D38] ml-1">2</span>
               </div>

@@ -49,7 +49,7 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section id="fitur" className="relative pt-24 pb-20 bg-transparent overflow-hidden border-b-2 border-[#1C4D38]/25">
+    <section id="fitur" className="relative pt-24 pb-20 bg-transparent overflow-hidden border-b-2 border-[#1C4D38]/25 scroll-mt-24">
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
 
         {/* Section Header */}

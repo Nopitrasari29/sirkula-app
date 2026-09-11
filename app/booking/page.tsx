@@ -108,7 +108,7 @@ export default function BookingPage() {
     // 2. Add bonus points in localStorage
     addPoints(bookingSummary.earnedPoints || 82, bookingSummary.totalWeight || 2.5);
 
-    setRewardToast(`🎉 Booking #${newBooking.id} Berhasil! +${bookingSummary.earnedPoints || 82} Poin ditambahkan ke akunmu.`);
+    setRewardToast(`Booking #${newBooking.id} Berhasil! +${bookingSummary.earnedPoints || 82} Poin ditambahkan ke akunmu.`);
     setTimeout(() => {
       setRewardToast(null);
     }, 4500);
@@ -162,7 +162,6 @@ export default function BookingPage() {
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-[#1C4D38] tracking-tight font-display flex items-center gap-2">
                 <span>Jadwal & Booking Penjemputan</span>
-                <span className="text-emerald-700">🌿</span>
               </h1>
               <p className="text-xs sm:text-sm text-[#1C4D38]/80 font-medium">
                 Pilih rute, titik penyetoran (bank sampah), dan pantau jadwal penjemputanmu

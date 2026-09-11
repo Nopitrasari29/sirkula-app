@@ -23,6 +23,7 @@ import {
   Share2,
   Bookmark,
   ArrowRight,
+  BookOpen,
 } from 'lucide-react';
 import CustomAlertModal, { AlertType } from '@/components/ui/CustomAlertModal';
 
@@ -359,7 +360,7 @@ export default function EduLessonPlayerView({
 
                   <div className="space-y-2.5">
                     <h4 className="text-xs font-black text-[#1C4D38] font-display flex items-center gap-2">
-                      <span className="text-emerald-700">🌱</span>
+                      <BookOpen className="w-3.5 h-3.5 text-emerald-700" />
                       <span>Hal yang Kamu Pelajari</span>
                     </h4>
 

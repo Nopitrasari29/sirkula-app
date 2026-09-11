@@ -33,6 +33,33 @@ export interface LearningPathStep {
   desc?: string;
 }
 
+export const TOPIC_METADATA: Record<string, { desc: string; icon: string }> = {
+  'Pengelolaan Sampah': {
+    desc: 'Pelajari cara mengelola sampah dengan benar, mulai dari pemilahan, pengurangan, hingga pengolahan untuk lingkungan yang lebih bersih dan sehat.',
+    icon: '/assets/illustrations/edu-sort-waste.png',
+  },
+  'Gaya Hidup Hijau': {
+    desc: 'Terapkan gaya hidup minim sampah (Zero Waste) untuk anak kos dan rumah tangga dengan langkah praktis bebas plastik sekali pakai.',
+    icon: '/assets/illustrations/edu-zero-waste.png',
+  },
+  'Kompos & Organik': {
+    desc: 'Ubah sisa makanan dan sampah organik kos menjadi kompos berkualitas dan cairan pembersih alami eco-enzyme.',
+    icon: '/assets/illustrations/edu-compost-bin.png',
+  },
+  'Daur Ulang': {
+    desc: 'Ketahui seluk beluk kode resin plastik, cara memilah kardus kering, dan proses konversi sampah daur ulang bernilai ekonomi.',
+    icon: '/assets/illustrations/edu-plastic-recycle.png',
+  },
+  'Bank Sampah': {
+    desc: 'Pahami mekanisme tabungan sampah, standar pemilahan setoran, dan alur penjemputan mitra bank sampah terdekat.',
+    icon: '/assets/illustrations/scan-item-bottle.png',
+  },
+  'Isu Lingkungan': {
+    desc: 'Eksplorasi isu lingkungan kontemporer, ancaman mikroplastik, dan kontribusi nyata kamu untuk kelestarian alam.',
+    icon: '/assets/illustrations/spring-leaves-bg.png',
+  },
+};
+
 export const TOPIC_LEARNING_PATHS: Record<string, LearningPathStep[]> = {
   'Pengelolaan Sampah': [
     {
@@ -94,6 +121,172 @@ export const TOPIC_LEARNING_PATHS: Record<string, LearningPathStep[]> = {
       desc: 'Selesaikan semua materi untuk membuka kuis.',
     },
   ],
+  'Gaya Hidup Hijau': [
+    {
+      id: 'mat-gh-1',
+      stepNumber: 1,
+      title: 'Prinsip Zero Waste untuk Anak Kos',
+      type: 'Artikel',
+      duration: '4 menit',
+      points: 20,
+      status: 'active',
+      desc: 'Panduan dasar memulai kebiasaan minim sampah tanpa repot di lingkungan kos.',
+    },
+    {
+      id: 'mat-gh-2',
+      stepNumber: 2,
+      title: 'Panduan Mengganti Plastik Sekali Pakai',
+      type: 'Video',
+      duration: '5 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Alternatif wadah makanan, sedotan, dan kantong belanja ramah lingkungan.',
+    },
+    {
+      id: 'mat-4',
+      stepNumber: 3,
+      title: 'Gaya Hidup Minim Sampah untuk Pemula',
+      type: 'Artikel',
+      duration: '4 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Langkah bertahap mengurangi sampah plastik belanjaan online dan makanan pesan antar.',
+    },
+    {
+      id: 'mat-gh-4',
+      stepNumber: 4,
+      title: 'Tips Belanja Hemat Bebas Sampah Plastik',
+      type: 'Artikel',
+      duration: '6 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Trik membawa wadah sendiri saat beli makan di warung atau pasar lokal.',
+    },
+    {
+      id: 'mat-gh-5',
+      stepNumber: 5,
+      title: 'Audit Sampah Kos Mandiri dalam 7 Hari',
+      type: 'Video',
+      duration: '5 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Cara mengukur volume sampah harianmu dan target pengurangan mingguan.',
+    },
+    {
+      id: 'mat-quiz-gh',
+      stepNumber: 6,
+      title: 'Kuis Gaya Hidup Hijau & Zero Waste',
+      type: 'Kuis',
+      duration: '10 soal',
+      points: 50,
+      status: 'locked',
+      desc: 'Uji pengetahuan gaya hidup minim sampah untuk meraih bonus poin.',
+    },
+  ],
+  'Kompos & Organik': [
+    {
+      id: 'mat-ko-1',
+      stepNumber: 1,
+      title: 'Mengenal Sampah Organik Mudah Busuk',
+      type: 'Artikel',
+      duration: '3 menit',
+      points: 20,
+      status: 'active',
+      desc: 'Membedakan sisa sayur, buah, dan nasi yang cocok dijadikan bahan kompos.',
+    },
+    {
+      id: 'mat-2',
+      stepNumber: 2,
+      title: 'Membuat Kompos dari Sampah Organik',
+      type: 'Video',
+      duration: '6 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Metode komposting sederhana tanpa lahan luas untuk anak kos.',
+    },
+    {
+      id: 'mat-ko-3',
+      stepNumber: 3,
+      title: 'Metode Kompos Ember & Keranjang Takakura',
+      type: 'Artikel',
+      duration: '5 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Teknik fermentasi praktis menggunakan keranjang takakura di teras kos.',
+    },
+    {
+      id: 'mat-ko-4',
+      stepNumber: 4,
+      title: 'Pembuatan Eco-Enzyme dari Kulit Buah Kos',
+      type: 'Video',
+      duration: '5 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Manfaatkan kulit jeruk dan apel menjadi cairan pembersih serbaguna.',
+    },
+    {
+      id: 'mat-quiz-ko',
+      stepNumber: 5,
+      title: 'Kuis Pengomposan & Sampah Organik',
+      type: 'Kuis',
+      duration: '8 soal',
+      points: 50,
+      status: 'locked',
+      desc: 'Selesaikan kuis untuk membuka badge Ahli Kompos.',
+    },
+  ],
+  'Daur Ulang': [
+    {
+      id: 'mat-3',
+      stepNumber: 1,
+      title: 'Daur Ulang Plastik: Proses & Manfaatnya',
+      type: 'Video',
+      duration: '5 menit',
+      points: 20,
+      status: 'active',
+      desc: 'Kenali alur sampah botol plastik dari tempat sampah ke pabrik daur ulang.',
+    },
+    {
+      id: 'mat-du-2',
+      stepNumber: 2,
+      title: 'Memahami 7 Kode Segitiga Plastik (PET, HDPE, PP)',
+      type: 'Artikel',
+      duration: '5 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Mengetahui jenis plastik yang paling laku dan bernilai tinggi di pengepul.',
+    },
+    {
+      id: 'mat-du-3',
+      stepNumber: 3,
+      title: 'Menyiapkan Kardus & Kertas Kering Bernilai Jual',
+      type: 'Artikel',
+      duration: '4 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Trik merapikan dan mengikat kardus belanja online agar dihargai maksimal.',
+    },
+    {
+      id: 'mat-du-4',
+      stepNumber: 4,
+      title: 'Daur Ulang Logam & Kaleng Minuman Aluminium',
+      type: 'Video',
+      duration: '5 menit',
+      points: 20,
+      status: 'locked',
+      desc: 'Keunggulan daur ulang aluminium yang bisa diolah berulang kali tanpa batas.',
+    },
+    {
+      id: 'mat-quiz-du',
+      stepNumber: 5,
+      title: 'Kuis Klasifikasi Bahan Daur Ulang',
+      type: 'Kuis',
+      duration: '10 soal',
+      points: 50,
+      status: 'locked',
+      desc: 'Uji keahlian memilah sampah daur ulang dan raih poin tambahan.',
+    },
+  ],
 };
 
 interface EduLearningPathViewProps {
@@ -114,7 +307,10 @@ export default function EduLearningPathView({
   const baseSteps =
     TOPIC_LEARNING_PATHS[topicName] || TOPIC_LEARNING_PATHS['Pengelolaan Sampah'];
 
-  // 📈 Dynamically compute status for each step based on completedIds from storage
+  const meta =
+    TOPIC_METADATA[topicName] || TOPIC_METADATA['Pengelolaan Sampah'];
+
+  // Dynamically compute status for each step based on completedIds from storage
   const steps = useMemo(() => {
     let hasFoundActive = false;
     return baseSteps.map((step) => {
@@ -137,7 +333,7 @@ export default function EduLearningPathView({
   return (
     <div className="space-y-6">
       
-      {/* 🧭 Breadcrumb & Header Bar */}
+      {/* Breadcrumb & Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-xs font-bold text-[#1C4D38]/60">
@@ -160,12 +356,11 @@ export default function EduLearningPathView({
             <span className="text-[#1C4D38] font-black">{topicName}</span>
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-black text-[#1C4D38] font-display flex items-center gap-2">
-            <span>{topicName}</span>
-            <span className="text-emerald-700">♻️</span>
+          <h2 className="text-xl sm:text-2xl font-black text-[#1C4D38] font-display">
+            {topicName}
           </h2>
-          <p className="text-xs text-[#1C4D38]/70 font-medium">
-            Pelajari cara mengelola sampah dengan benar, mulai dari pemilahan, pengurangan, hingga pengolahan untuk lingkungan yang lebih bersih dan sehat.
+          <p className="text-xs text-[#1C4D38]/70 font-medium max-w-3xl">
+            {meta.desc}
           </p>
         </div>
 
@@ -179,15 +374,15 @@ export default function EduLearningPathView({
         </button>
       </div>
 
-      {/* 📊 Top Progress Summary Card */}
+      {/* Top Progress Summary Card */}
       <div className="bg-white border border-[#1C4D38]/10 rounded-[32px] p-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
         
         {/* Left: Illustration & Progress Bar */}
         <div className="flex items-center gap-4 flex-1 w-full">
           <div className="w-20 h-20 bg-[#FAF5ED] rounded-2xl flex items-center justify-center p-2 border border-[#1C4D38]/10 shrink-0">
             <img
-              src="/assets/illustrations/scan-item-bottle.png"
-              alt="Icon Topik"
+              src={meta.icon}
+              alt={topicName}
               className="w-full h-full object-contain"
             />
           </div>
@@ -399,7 +594,7 @@ export default function EduLearningPathView({
 
             <div className="p-4 bg-[#D1EBE1] rounded-2xl border border-emerald-500/20 flex items-center gap-3 shadow-2xs">
               <div className="w-10 h-10 rounded-full bg-white text-emerald-800 flex items-center justify-center font-black shadow-xs">
-                🌱
+                <Award className="w-5 h-5 text-emerald-800" />
               </div>
               <div>
                 <p className="text-[10px] font-black text-[#1C4D38]/60 uppercase">Badge</p>

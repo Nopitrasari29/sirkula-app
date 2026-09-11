@@ -24,6 +24,7 @@ export default function EdukasiPage() {
 
   // Navigation View State
   const [currentView, setCurrentView] = useState<EduPageView>('hub');
+  const [allMateriTab, setAllMateriTab] = useState<'Semua' | 'Video' | 'Artikel' | 'Infografis' | 'Panduan' | 'Tersimpan'>('Semua');
   const [selectedTopic, setSelectedTopic] = useState<string>('Pengelolaan Sampah');
   const [selectedLessonId, setSelectedLessonId] = useState<string>('mat-2');
 
@@ -101,7 +102,7 @@ export default function EdukasiPage() {
       window.dispatchEvent(new Event('storage'));
     }
 
-    setRewardToast(`🎉 Selamat! Kamu telah menyelesaikan materi & mendapatkan +${points} Poin SIRKULA.`);
+    setRewardToast(`Selamat! Kamu telah menyelesaikan materi & mendapatkan +${points} Poin SIRKULA.`);
     setTimeout(() => {
       setRewardToast(null);
     }, 4500);
@@ -125,7 +126,7 @@ export default function EdukasiPage() {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('storage'));
       }
-      setRewardToast(`🎉 Hebat! Kamu meraih skor ${score}/100 pada Kuis Harian & mendapatkan +50 Poin SIRKULA.`);
+      setRewardToast(`Hebat! Kamu meraih skor ${score}/100 pada Kuis Harian & mendapatkan +50 Poin SIRKULA.`);
       setTimeout(() => {
         setRewardToast(null);
       }, 4500);
@@ -164,9 +165,8 @@ export default function EdukasiPage() {
           {/* Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-[#1C4D38] tracking-tight font-display flex items-center gap-2">
-                <span>Edukasi</span>
-                <span className="text-emerald-700">📖</span>
+              <h1 className="text-2xl sm:text-3xl font-black text-[#1C4D38] tracking-tight font-display">
+                Edukasi
               </h1>
               <p className="text-xs sm:text-sm text-[#1C4D38]/80 font-medium">
                 Belajar, peduli, dan bertindak untuk lingkungan yang lebih baik.
@@ -195,10 +195,13 @@ export default function EdukasiPage() {
             </div>
           </div>
 
-          {/* 🌟 VIEW 1: Main Edukasi Hub (Screen 1) */}
+          {/* VIEW 1: Main Edukasi Hub (Screen 1) */}
           {currentView === 'hub' && (
             <EduHubView
-              onNavigateToAllMateri={() => setCurrentView('all-materi')}
+              onNavigateToAllMateri={(tab) => {
+                setAllMateriTab(tab || 'Semua');
+                setCurrentView('all-materi');
+              }}
               onNavigateToTopics={() => setCurrentView('topics')}
               onSelectTopic={handleSelectTopic}
               onSelectLesson={handleSelectLesson}
@@ -207,13 +210,14 @@ export default function EdukasiPage() {
             />
           )}
 
-          {/* 🌟 VIEW 2: Materi Terbaru Catalog (Screen 2) */}
+          {/* VIEW 2: Materi Terbaru Catalog (Screen 2) */}
           {currentView === 'all-materi' && (
             <EduAllMateriView
               onBackToHub={() => setCurrentView('hub')}
               onSelectLesson={handleSelectLesson}
               onOpenAiRecommend={() => setIsAiModalOpen(true)}
               completedIds={completedIds}
+              initialTab={allMateriTab}
             />
           )}
 
@@ -312,7 +316,7 @@ export default function EdukasiPage() {
                 {/* Explanation if Submitted */}
                 {quizSubmitted && (
                   <div className="p-4 bg-[#FAF5ED] rounded-2xl border border-[#1C4D38]/15 space-y-1 text-xs">
-                    <p className="font-black text-[#1C4D38]">💡 Pembahasan & Fakta:</p>
+                    <p className="font-black text-[#1C4D38]">Pembahasan & Fakta:</p>
                     <p className="text-[#1C4D38]/80 font-medium leading-relaxed">
                       {QUIZ_QUESTIONS[quizIdx].expl}
                     </p>

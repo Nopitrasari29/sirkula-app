@@ -72,7 +72,7 @@ export default function KontribusiJenisSampahCard() {
         {/* Left: Donut Chart with Center Text (5 Cols) */}
         <div className="sm:col-span-5 h-44 relative flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+            <PieChart style={{ outline: 'none' }}>
               <Pie
                 data={pieData}
                 cx="50%"
@@ -81,9 +81,16 @@ export default function KontribusiJenisSampahCard() {
                 outerRadius={66}
                 paddingAngle={3}
                 dataKey="value"
+                style={{ outline: 'none' }}
               >
                 {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                    stroke="none"
+                    style={{ outline: 'none' }}
+                    className="focus:outline-hidden"
+                  />
                 ))}
               </Pie>
             </PieChart>

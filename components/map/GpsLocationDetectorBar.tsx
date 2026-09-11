@@ -49,7 +49,7 @@ export default function GpsLocationDetectorBar({
   const [showPresets, setShowPresets] = useState(false);
 
   return (
-    <div className="bg-white/90 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-[#1C4D38]/10 shadow-xs space-y-3">
+    <div className={`bg-white/90 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-[#1C4D38]/10 shadow-xs space-y-3 relative transition-all ${showPresets ? 'z-40' : 'z-20'}`}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         
         {/* Left Status & Details */}
@@ -111,7 +111,7 @@ export default function GpsLocationDetectorBar({
           </button>
 
           {/* Preset Simulation Dropdown Toggle */}
-          <div className="relative">
+          <div className="relative z-50">
             <button
               type="button"
               onClick={() => setShowPresets(!showPresets)}
@@ -152,7 +152,7 @@ export default function GpsLocationDetectorBar({
                     }}
                     className="w-full text-left px-2.5 py-1 text-[11px] font-extrabold text-amber-800 hover:bg-amber-50 rounded-lg transition"
                   >
-                    ↺ Reset ke Sukolilo Default
+                    ↺ Reset Titik Default
                   </button>
                 </div>
               </div>

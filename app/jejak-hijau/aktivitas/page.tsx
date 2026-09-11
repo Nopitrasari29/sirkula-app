@@ -220,9 +220,35 @@ export default function SemuaAktivitasPage() {
     { name: 'Badge', icon: Award },
   ];
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      Semua: liveActivities.length,
+      Scan: 0,
+      Setoran: 0,
+      Booking: 0,
+      Kuis: 0,
+      Badge: 0,
+    };
+    liveActivities.forEach((act) => {
+      const c = act.category;
+      if (counts[c] !== undefined) {
+        counts[c]++;
+      }
+    });
+    return counts;
+  }, [liveActivities]);
+
   const filteredActivities = useMemo(() => {
+    const targetCategory = activeCategory.trim().toLowerCase();
+
     return liveActivities.filter((item) => {
-      const matchCategory = activeCategory === 'Semua' || item.category === activeCategory;
+      const itemCategory = (item.category || '').trim().toLowerCase();
+      
+      // Strict category filter: if not 'semua', item category MUST match target
+      if (targetCategory !== 'semua' && itemCategory !== targetCategory) {
+        return false;
+      }
+
       let matchTime = true;
       if (selectedTimeframe === 'Hari Ini') {
         matchTime = item.time.toLowerCase().includes('hari ini');
@@ -231,7 +257,7 @@ export default function SemuaAktivitasPage() {
       } else if (selectedTimeframe === 'Bulan Ini') {
         matchTime = true;
       }
-      return matchCategory && matchTime;
+      return matchTime;
     });
   }, [liveActivities, activeCategory, selectedTimeframe]);
 
@@ -290,11 +316,12 @@ export default function SemuaAktivitasPage() {
                 {categories.map((cat) => {
                   const IconC = cat.icon;
                   const isActive = activeCategory === cat.name;
+                  const count = categoryCounts[cat.name] || 0;
                   return (
                     <button
                       key={cat.name}
                       onClick={() => setActiveCategory(cat.name)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-200 border cursor-pointer ${
+                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all duration-200 border cursor-pointer ${
                         isActive
                           ? 'bg-[#1C4D38] text-white border-[#1C4D38] shadow-xs'
                           : 'bg-white text-[#1C4D38] border-[#1C4D38]/20 hover:bg-gray-50'
@@ -302,6 +329,15 @@ export default function SemuaAktivitasPage() {
                     >
                       <IconC className="w-3.5 h-3.5" />
                       <span>{cat.name}</span>
+                      <span
+                        className={`px-1.5 py-0.5 rounded-full text-[10px] font-black leading-none ${
+                          isActive
+                            ? 'bg-white/25 text-white'
+                            : 'bg-[#1C4D38]/10 text-[#1C4D38]'
+                        }`}
+                      >
+                        {count}
+                      </span>
                     </button>
                   );
                 })}

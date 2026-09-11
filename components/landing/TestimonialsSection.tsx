@@ -86,7 +86,7 @@ export default function TestimonialsSection() {
   ];
 
   return (
-    <section id="testimoni" className="relative py-24 bg-transparent border-b-2 border-[#1C4D38]/25 overflow-hidden">
+    <section id="testimoni" className="relative py-24 bg-transparent border-b-2 border-[#1C4D38]/25 overflow-hidden scroll-mt-24">
       
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 mb-14 text-center space-y-3">
         <ScrollReveal direction="up" delay={0}>

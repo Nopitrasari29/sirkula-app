@@ -86,7 +86,7 @@ export default function Footer() {
                 type="text"
                 value={suggestion}
                 onChange={(e) => setSuggestion(e.target.value)}
-                placeholder={isSent ? 'Saran terkirim! Terima kasih ❤️' : 'Tulis saran atau masukanmu di...'}
+                placeholder={isSent ? 'Saran terkirim! Terima kasih' : 'Tulis saran atau masukanmu di...'}
                 disabled={isSent}
                 className="w-full py-3 pl-4 pr-12 text-sm bg-[#143B2B] border border-[#235841] rounded-xl text-white placeholder-[#F4F2E9]/50 focus:outline-none focus:border-[#D9A74E] disabled:opacity-80"
               />

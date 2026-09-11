@@ -32,14 +32,14 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   {
     id: 'msg-1',
     sender: 'bot',
-    text: 'Halo! Saya EcoBot 🌿 Asisten pintar SIRKULA.\nAda yang bisa dibantu seputar cara pilah sampah kos, harga daur ulang per kg, atau penjemputan armada?',
+    text: 'Halo! Saya EcoBot, asisten cerdas SIRKULA.\nAda yang bisa dibantu seputar cara pilah sampah kos, harga daur ulang per kg, atau penjemputan armada?',
     time: 'Baru saja',
     quickReplies: [
-      '🏷️ Cek harga sampah hari ini',
-      '☕ Cup kopi plastik bisa disetor?',
-      '🛵 Bisa jemput ke gang kos?',
-      '🪙 Cara tukar poin ke E-Wallet',
-      '📍 Drop-Box 24 Jam terdekat',
+      'Cek harga sampah hari ini',
+      'Cup kopi plastik bisa disetor?',
+      'Bisa jemput ke gang kos?',
+      'Cara tukar poin ke E-Wallet',
+      'Drop-Box 24 Jam terdekat',
     ],
   },
 ];
@@ -61,9 +61,9 @@ function getBotResponse(userText: string): {
     query.includes('taksir')
   ) {
     return {
-      text: 'Estimasi nilai setoran di Mitra Bank Sampah SIRKULA saat ini:\n\n• 🧴 Botol Plastik Bersih (PET): Rp 3.500 – Rp 4.500 / kg\n• 📦 Kardus & Box Paket: Rp 2.200 – Rp 2.800 / kg\n• 🥫 Kaleng Minuman Logam: Rp 12.000 – Rp 14.000 / kg\n• 📄 Kertas HVS / Buku Bekas: Rp 2.000 – Rp 2.500 / kg\n• 🔌 Limbah Elektronik (Kabel/Baterai): Rp 8.000 – Rp 15.000 / kg\n\n💡 Tips: Cuci bersih dan pipihkan sampah sebelum disetor agar nilai timbangannya maksimal!',
+      text: 'Estimasi nilai setoran di Mitra Bank Sampah SIRKULA saat ini:\n\n• Botol Plastik Bersih (PET): Rp 3.500 – Rp 4.500 / kg\n• Kardus & Box Paket: Rp 2.200 – Rp 2.800 / kg\n• Kaleng Minuman Logam: Rp 12.000 – Rp 14.000 / kg\n• Kertas HVS / Buku Bekas: Rp 2.000 – Rp 2.500 / kg\n• Limbah Elektronik (Kabel/Baterai): Rp 8.000 – Rp 15.000 / kg\n\nTips: Cuci bersih dan pipihkan sampah sebelum disetor agar nilai timbangannya maksimal.',
       actionLink: { label: 'Buka AI Scanner untuk Taksir Sampah', href: '/scanner' },
-      quickReplies: ['🛵 Jadwal jemput hari apa?', '🪙 Poin yang didapat berapa?'],
+      quickReplies: ['Jadwal jemput hari apa?', 'Poin yang didapat berapa?'],
     };
   }
 
@@ -76,9 +76,9 @@ function getBotResponse(userText: string): {
     query.includes('plastik')
   ) {
     return {
-      text: 'Cup kopi kekinian (bahan PP/PET) BISA didaur ulang! Caranya mudah:\n\n1. Buang sisa cairan/es batu dan sedotan.\n2. Bilas sebentar dengan air agar tidak berbau.\n3. Lepaskan segel seal plastik penutup.\n4. Tumpuk ringkas di tempat pilah kosmu.\n\n✨ Setiap 10 cup kopi setara ~250 gram plastik dan bernilai 50 Poin Hijau!',
+      text: 'Cup kopi kekinian (bahan PP/PET) dapat didaur ulang! Caranya mudah:\n\n1. Buang sisa cairan/es batu dan sedotan.\n2. Bilas sebentar dengan air agar tidak berbau.\n3. Lepaskan segel seal plastik penutup.\n4. Tumpuk ringkas di tempat pilah kosmu.\n\nSetiap 10 cup kopi setara ~250 gram plastik dan bernilai 50 Poin Hijau.',
       actionLink: { label: 'Scan Sampahmu via AI', href: '/scanner' },
-      quickReplies: ['📍 Lokasi Drop-Box 24 Jam', '📦 Harga kardus hari ini?'],
+      quickReplies: ['Lokasi Drop-Box 24 Jam', 'Harga kardus hari ini?'],
     };
   }
 
@@ -93,7 +93,7 @@ function getBotResponse(userText: string): {
     return {
       text: 'Kardus paket belanja online anak kos adalah komoditas daur ulang paling diminati!\n\nLangkah penanganan:\n1. Lepaskan selotip / lakban plastik.\n2. Pipihkan kardus agar hemat tempat di kamar kos.\n3. Bubble wrap bening pisahkan ke kategori plastik lentur.\n\nKardus bisa langsung disetor ke Smart Drop-Box 24 Jam atau dipesan jemput langsung ke depan kos.',
       actionLink: { label: 'Lihat Titik Drop-Box Terdekat', href: '/lokasi' },
-      quickReplies: ['🛵 Cara pesan penjemputan', '🏷️ Cek harga sampah'],
+      quickReplies: ['Cara pesan penjemputan', 'Cek harga sampah'],
     };
   }
 
@@ -108,7 +108,7 @@ function getBotResponse(userText: string): {
     return {
       text: 'Bisa banget! SIRKULA menggunakan armada Motor Listrik Roda Tiga yang ramah lingkungan dan sanggup masuk ke gang-gang sempit kos (seperti Keputih, Gebang, Mulyorejo, dan Semolowaru).\n\nKetentuan penjemputan:\n• Minimal estimasi 3 kg (bisa kumpulkan bareng teman kos!).\n• Bebas tentukan hari & slot jam penjemputan sesuai jadwal luang kuliahmu.',
       actionLink: { label: 'Jadwalkan Penjemputan Sekarang', href: '/booking' },
-      quickReplies: ['🪙 Berapa saldo poin yang didapat?', '📍 Peta bank sampah mitra'],
+      quickReplies: ['Berapa saldo poin yang didapat?', 'Peta bank sampah mitra'],
     };
   }
 
@@ -125,7 +125,7 @@ function getBotResponse(userText: string): {
     return {
       text: 'Poin Hijau SIRKULA dapat kamu konversi menjadi reward nyata anak kos:\n\n• Saldo E-Wallet (GoPay, OVO, DANA, ShopeePay)\n• Token Listrik PLN Kos & Paket Data Internet\n• Voucher Diskon Kantin Kampus & Refill Station\n\n1 Poin Hijau bernilai setara Rp 100 saldo tunai/voucher.',
       actionLink: { label: 'Cek Poin & Badge di Jejak Hijau', href: '/jejak-hijau' },
-      quickReplies: ['🏷️ Cek harga daur ulang', '🛵 Buat jadwal jemput'],
+      quickReplies: ['Cek harga daur ulang', 'Buat jadwal jemput'],
     };
   }
 
@@ -141,7 +141,7 @@ function getBotResponse(userText: string): {
     return {
       text: 'SIRKULA terhubung dengan jaringan titik hijau di sekitarmu:\n\n1. Smart Drop-Box 24 Jam (Keputih Gang 2 & Gebang Wetan) — bebas setor kapan saja tanpa antre!\n2. TPS3R Kelurahan Semolowaru\n3. Stasiun Kompos Kampus ITS Eco Campus\n4. Bank Sampah Induk Surabaya Timur (Mulyorejo)\n\nNyalakan fitur GPS di menu Lokasi untuk panduan rute dan jarak terdekat!',
       actionLink: { label: 'Buka Peta Interaktif & GPS', href: '/lokasi' },
-      quickReplies: ['🏷️ Cek harga daur ulang', '☕ Cup kopi bisa disetor?'],
+      quickReplies: ['Cek harga daur ulang', 'Cup kopi bisa disetor?'],
     };
   }
 
@@ -156,7 +156,7 @@ function getBotResponse(userText: string): {
     return {
       text: 'Sampah organik seperti sisa makanan kering, kulit buah, dan ampas kopi/teh disalurkan ke Stasiun Kompos Kampus ITS Eco Campus.\n\nSampahmu diolah menjadi pupuk kompos ramah lingkungan untuk penghijauan taman kampus, dan penyetor berhak mendapatkan pupuk tanaman gratis!',
       actionLink: { label: 'Lihat Stasiun Kompos Kampus', href: '/lokasi' },
-      quickReplies: ['📍 Drop-Box 24 Jam terdekat', '🏷️ Harga daur ulang'],
+      quickReplies: ['Drop-Box 24 Jam terdekat', 'Harga daur ulang'],
     };
   }
 
@@ -169,9 +169,9 @@ function getBotResponse(userText: string): {
     query.includes('b3')
   ) {
     return {
-      text: '⚠️ Jangan buang baterai bekas, charger rusak, atau kabel ke tong sampah umum karena mengandung logam berat berbahaya.\n\nMasukkan ke Drop-Box Khusus E-Waste di Jl. Arief Rahman Hakim No. 102. Reward poin untuk limbah elektronik 2x lebih besar!',
+      text: 'Penting: Jangan buang baterai bekas, charger rusak, atau kabel ke tong sampah umum karena mengandung logam berat berbahaya.\n\nMasukkan ke Drop-Box Khusus E-Waste di Jl. Arief Rahman Hakim No. 102. Reward poin untuk limbah elektronik 2x lebih besar!',
       actionLink: { label: 'Cek Titik Drop-off E-Waste', href: '/lokasi' },
-      quickReplies: ['📍 Peta lokasi terdekat', '🪙 Nilai tukar poin'],
+      quickReplies: ['Peta lokasi terdekat', 'Nilai tukar poin'],
     };
   }
 
@@ -184,9 +184,9 @@ function getBotResponse(userText: string): {
     query.includes('bantuan')
   ) {
     return {
-      text: 'Alur 3 Langkah Mudah SIRKULA:\n\n1. 🔍 PILAH & SCAN: Pisahkan sampah kosmu, foto dengan AI Scanner untuk deteksi jenis & taksiran nilainya.\n2. 🛵 DROP ATAU JEMPUT: Masukkan ke Drop-Box 24 Jam terdekat atau pesan penjemputan armada motor roda tiga.\n3. 🪙 DAPATKAN REWARD: Sampah ditimbang akurat, poin & saldo langsung masuk ke akunmu!',
+      text: 'Alur 3 Langkah Mudah SIRKULA:\n\n1. PILAH & SCAN: Pisahkan sampah kosmu, foto dengan AI Scanner untuk deteksi jenis & taksiran nilainya.\n2. DROP ATAU JEMPUT: Masukkan ke Drop-Box 24 Jam terdekat atau pesan penjemputan armada motor roda tiga.\n3. DAPATKAN REWARD: Sampah ditimbang akurat, poin & saldo langsung masuk ke akunmu!',
       actionLink: { label: 'Coba AI Scanner Sekarang', href: '/scanner' },
-      quickReplies: ['🏷️ Cek harga sampah hari ini', '🛵 Pesan jemput sampah'],
+      quickReplies: ['Cek harga sampah hari ini', 'Pesan jemput sampah'],
     };
   }
 
@@ -195,10 +195,10 @@ function getBotResponse(userText: string): {
     text: `Terima kasih pertanyaannya! Untuk "${userText}", kamu bisa menggunakan fitur AI Scanner untuk mengenali jenis sampah tersebut otomatis, atau mengecek titik bank sampah terdekat via peta interaktif. Ada pertanyaan lain seputar pemilahan sampah kos?`,
     actionLink: { label: 'Buka Panduan Edukasi Sampah', href: '/edukasi' },
     quickReplies: [
-      '🏷️ Cek harga daur ulang',
-      '🛵 Cara jemput ke gang kos',
-      '📍 Drop-Box 24 Jam terdekat',
-      '🪙 Tukar poin ke e-wallet',
+      'Cek harga daur ulang',
+      'Cara jemput ke gang kos',
+      'Drop-Box 24 Jam terdekat',
+      'Tukar poin ke e-wallet',
     ],
   };
 }

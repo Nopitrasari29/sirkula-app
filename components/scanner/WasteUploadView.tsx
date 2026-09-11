@@ -46,6 +46,10 @@ export default function WasteUploadView({ onStartScan, onOpenHistory }: WasteUpl
   const [webcamError, setWebcamError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [isCapturing, setIsCapturing] = useState(false);
+  const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
+  const [activeCameraIndex, setActiveCameraIndex] = useState<number>(0);
+  const [isMirrored, setIsMirrored] = useState<boolean>(true);
+  const [cameraNotice, setCameraNotice] = useState<string | null>(null);
 
   // Detect mobile on mount
   useEffect(() => {
@@ -86,23 +90,62 @@ export default function WasteUploadView({ onStartScan, onOpenHistory }: WasteUpl
   };
 
   // --- WEBCAM LOGIC ---
-  const startWebcam = useCallback(async (facing: 'environment' | 'user' = 'environment') => {
+  const startWebcam = useCallback(async (facing: 'environment' | 'user' = 'environment', targetDeviceId?: string) => {
     setWebcamError(null);
     try {
       if (stream) {
         stream.getTracks().forEach(t => t.stop());
       }
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+
+      // 1. Initial device discovery
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.enumerateDevices) {
+        try {
+          const allDevices = await navigator.mediaDevices.enumerateDevices();
+          const vDevs = allDevices.filter(d => d.kind === 'videoinput');
+          setVideoDevices(vDevs);
+        } catch (e) {}
+      }
+
+      // 2. Build constraints with exact deviceId or ideal facingMode
+      const constraints: MediaStreamConstraints = {
         audio: false,
-      });
+        video: targetDeviceId
+          ? { deviceId: { exact: targetDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }
+          : { facingMode: { ideal: facing }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      };
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       setShowWebcam(true);
+
+      // 3. Post-permission enumeration to populate labels and determine active camera
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.enumerateDevices) {
+        try {
+          const allDevices = await navigator.mediaDevices.enumerateDevices();
+          const vDevs = allDevices.filter(d => d.kind === 'videoinput');
+          setVideoDevices(vDevs);
+
+          const videoTrack = mediaStream.getVideoTracks()[0];
+          const settings = videoTrack?.getSettings?.();
+          const currentDevId = settings?.deviceId;
+
+          if (currentDevId && vDevs.length > 0) {
+            const idx = vDevs.findIndex(d => d.deviceId === currentDevId);
+            if (idx !== -1) {
+              setActiveCameraIndex(idx);
+              const activeLabel = vDevs[idx].label || '';
+              const isBack = /back|rear|environment/i.test(activeLabel);
+              setIsMirrored(!isBack);
+            }
+          }
+        } catch (e) {}
+      }
+
       // Attach to video element after state update
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
-          videoRef.current.play();
+          videoRef.current.play().catch(() => {});
         }
       }, 100);
     } catch (err) {
@@ -128,10 +171,44 @@ export default function WasteUploadView({ onStartScan, onOpenHistory }: WasteUpl
     }
   };
 
-  const handleFlipCamera = () => {
-    const newFacing = facingMode === 'environment' ? 'user' : 'environment';
-    setFacingMode(newFacing);
-    startWebcam(newFacing);
+  const handleFlipCamera = async () => {
+    // Check available devices
+    let currentDevs = videoDevices;
+    if (currentDevs.length === 0 && typeof navigator !== 'undefined' && navigator.mediaDevices?.enumerateDevices) {
+      try {
+        const all = await navigator.mediaDevices.enumerateDevices();
+        currentDevs = all.filter(d => d.kind === 'videoinput');
+        setVideoDevices(currentDevs);
+      } catch (e) {}
+    }
+
+    if (currentDevs.length > 1) {
+      // Cycle to next physical camera (supports front & back cameras on phone, tablet, 2-in-1, or dual cam PC)
+      const nextIdx = (activeCameraIndex + 1) % currentDevs.length;
+      setActiveCameraIndex(nextIdx);
+      const nextDevice = currentDevs[nextIdx];
+      const isBack = /back|rear|environment/i.test(nextDevice.label);
+      const newFacing = isBack ? 'environment' : 'user';
+      setFacingMode(newFacing);
+      setIsMirrored(!isBack);
+
+      const devName = nextDevice.label || `Kamera ${nextIdx + 1}`;
+      setCameraNotice(`Beralih ke: ${devName}`);
+      setTimeout(() => setCameraNotice(null), 3000);
+
+      startWebcam(newFacing, nextDevice.deviceId);
+    } else {
+      // Single camera detected (typical on laptop webcams)
+      const newFacing = facingMode === 'environment' ? 'user' : 'environment';
+      setFacingMode(newFacing);
+      setIsMirrored(prev => !prev);
+      setCameraNotice('Hanya 1 kamera terdeteksi di perangkat (mode cermin dibalik)');
+      setTimeout(() => setCameraNotice(null), 3500);
+
+      try {
+        startWebcam(newFacing);
+      } catch (e) {}
+    }
   };
 
   const handleCapturePhoto = () => {
@@ -145,8 +222,8 @@ export default function WasteUploadView({ onStartScan, onOpenHistory }: WasteUpl
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Mirror if front camera
-    if (facingMode === 'user') {
+    // Apply mirror if mirrored
+    if (isMirrored) {
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
     }
@@ -170,6 +247,7 @@ export default function WasteUploadView({ onStartScan, onOpenHistory }: WasteUpl
   const handleCloseWebcam = () => {
     setShowWebcam(false);
     setWebcamError(null);
+    setCameraNotice(null);
   };
 
   // --- DATA ---
@@ -233,14 +311,31 @@ export default function WasteUploadView({ onStartScan, onOpenHistory }: WasteUpl
             </div>
 
             {/* Video Feed */}
-            <div className="relative bg-black aspect-video">
+            <div className="relative bg-black aspect-video overflow-hidden">
               <video
                 ref={videoRef}
                 autoPlay
                 playsInline
                 muted
-                className={`w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
+                className={`w-full h-full object-cover transition-transform duration-300 ${isMirrored ? 'scale-x-[-1]' : ''}`}
               />
+
+              {/* Active Camera Badge */}
+              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-extrabold text-white flex items-center gap-1.5 z-20 pointer-events-none shadow-xs border border-white/10">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="truncate max-w-[200px]">
+                  {videoDevices.length > 1
+                    ? (videoDevices[activeCameraIndex]?.label || `Kamera ${activeCameraIndex + 1} dari ${videoDevices.length}`)
+                    : (isMirrored ? 'Kamera (Mode Cermin)' : 'Kamera Normal')}
+                </span>
+              </div>
+
+              {/* Floating Camera Notice / Alert */}
+              {cameraNotice && (
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-[#1C4D38]/95 text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg border border-white/20 z-30 animate-in fade-in zoom-in-95 text-center max-w-[90%] pointer-events-none">
+                  {cameraNotice}
+                </div>
+              )}
 
               {/* Scanning overlay */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">

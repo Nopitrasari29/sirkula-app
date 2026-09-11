@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MapPin, Navigation, CheckCircle2, AlertCircle, RefreshCw, X, ShieldCheck, Sparkles } from 'lucide-react';
+import { MapPin, Navigation, CheckCircle2, AlertCircle, RefreshCw, X, ShieldCheck, Sparkles, Target, Compass, Map } from 'lucide-react';
 import { useGeolocation, GPS_PERMISSION_KEY, GPS_STORAGE_KEY } from '@/hooks/useGeolocation';
 
 export default function LocationPermissionModal() {
@@ -125,18 +125,18 @@ export default function LocationPermissionModal() {
 
           {/* Value Highlights Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div className="bg-white/80 border border-[#1C4D38]/10 rounded-2xl p-3 text-center space-y-1">
-              <div className="text-base">🎯</div>
+            <div className="bg-white/80 border border-[#1C4D38]/10 rounded-2xl p-3 text-center space-y-1.5">
+              <Target className="w-5 h-5 mx-auto text-emerald-700" />
               <div className="text-[11px] font-black text-[#1C4D38]">Titik Terdekat</div>
               <p className="text-[10px] text-[#1C4D38]/70 leading-tight">Mendeteksi drop point sekitar kosmu</p>
             </div>
-            <div className="bg-white/80 border border-[#1C4D38]/10 rounded-2xl p-3 text-center space-y-1">
-              <div className="text-base">📏</div>
+            <div className="bg-white/80 border border-[#1C4D38]/10 rounded-2xl p-3 text-center space-y-1.5">
+              <Compass className="w-5 h-5 mx-auto text-emerald-700" />
               <div className="text-[11px] font-black text-[#1C4D38]">Jarak Nyata</div>
               <p className="text-[10px] text-[#1C4D38]/70 leading-tight">Hitung km & menit tempuh riil</p>
             </div>
-            <div className="bg-white/80 border border-[#1C4D38]/10 rounded-2xl p-3 text-center space-y-1">
-              <div className="text-base">🗺️</div>
+            <div className="bg-white/80 border border-[#1C4D38]/10 rounded-2xl p-3 text-center space-y-1.5">
+              <Map className="w-5 h-5 mx-auto text-emerald-700" />
               <div className="text-[11px] font-black text-[#1C4D38]">Peta Otomatis</div>
               <p className="text-[10px] text-[#1C4D38]/70 leading-tight">Peta berpusat tepat di posisimu</p>
             </div>
@@ -161,7 +161,7 @@ export default function LocationPermissionModal() {
                 <strong className="block font-bold">Perlu Izin Peramban:</strong>
                 <p className="text-[11px] text-amber-900 mt-0.5">{errorMsg}</p>
                 <p className="text-[10px] text-amber-800 mt-1">
-                  💡 Tips: Klik ikon gembok / perizinan di sebelah alamat URL peramban untuk mengizinkan akses lokasi.
+                  Tips: Klik ikon perizinan di sebelah alamat URL peramban untuk mengizinkan akses lokasi.
                 </p>
               </div>
             </div>

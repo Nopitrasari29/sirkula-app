@@ -13,7 +13,6 @@ const isBrowser = typeof window !== 'undefined';
 export interface RegisteredUser {
   fullName: string;
   email: string;
-  password?: string;
   createdAt: string;
 }
 
@@ -34,13 +33,11 @@ const DEFAULT_SEED_USERS: RegisteredUser[] = [
   {
     fullName: 'Rafika Az Zahra',
     email: 'fika@sirkula.id',
-    password: 'Sirkula123!',
     createdAt: '2026-08-01',
   },
   {
     fullName: 'Mahasiswa Demo ITS',
     email: 'demo@sirkula.id',
-    password: 'Sirkula123!',
     createdAt: '2026-08-01',
   },
 ];
@@ -51,7 +48,12 @@ export const getRegisteredUsers = (): RegisteredUser[] => {
   try {
     const data = localStorage.getItem(REGISTERED_USERS_KEY);
     const parsed = safeJsonParse<RegisteredUser[]>(data, DEFAULT_SEED_USERS);
-    return parsed.length > 0 ? parsed : DEFAULT_SEED_USERS;
+    // Sanitize any legacy plain-text password from localStorage for security
+    const sanitized = (parsed.length > 0 ? parsed : DEFAULT_SEED_USERS).map((u) => {
+      const { password, ...rest } = u as any;
+      return rest as RegisteredUser;
+    });
+    return sanitized;
   } catch (e) {
     return DEFAULT_SEED_USERS;
   }
@@ -68,7 +70,6 @@ export const registerUser = (userData: { fullName: string; email: string; passwo
   const newUser: RegisteredUser = {
     fullName: userData.fullName.trim(),
     email: userData.email.trim().toLowerCase(),
-    password: userData.password,
     createdAt: new Date().toISOString(),
   };
 
@@ -87,6 +88,22 @@ export const registerUser = (userData: { fullName: string; email: string; passwo
     isLoggedIn: true,
   });
 
+  // Seamlessly sync with backend API in background
+  if (isBrowser) {
+    fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.token) {
+          localStorage.setItem('sirkula_auth_token', data.token);
+        }
+      })
+      .catch((err) => console.warn('Backend sync (register):', err));
+  }
+
   return { success: true, message: 'Pendaftaran berhasil!' };
 };
 
@@ -100,8 +117,8 @@ export const validateLogin = (emailInput: string, passwordInput: string): { succ
     return { success: false, message: 'Email belum terdaftar! Silakan daftar akun terlebih dahulu.' };
   }
 
-  if (foundUser.password && foundUser.password !== passwordInput) {
-    return { success: false, message: 'Password salah. Silakan periksa kembali password Anda.' };
+  if (!passwordInput || passwordInput.trim().length === 0) {
+    return { success: false, message: 'Password wajib diisi.' };
   }
 
   // Set as logged in user
@@ -111,6 +128,22 @@ export const validateLogin = (emailInput: string, passwordInput: string): { succ
     email: foundUser.email,
     isLoggedIn: true,
   });
+
+  // Seamlessly sync with backend API in background & obtain JWT
+  if (isBrowser) {
+    fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: targetEmail, password: passwordInput }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.token) {
+          localStorage.setItem('sirkula_auth_token', data.token);
+        }
+      })
+      .catch((err) => console.warn('Backend sync (login):', err));
+  }
 
   return { success: true, message: 'Login berhasil!', user: foundUser };
 };
@@ -137,6 +170,9 @@ export const saveUserProfile = (profile: UserProfile): void => {
 };
 
 export const logoutUser = (): UserProfile => {
+  if (isBrowser) {
+    localStorage.removeItem('sirkula_auth_token');
+  }
   const defaultProfile = { ...INITIAL_USER_PROFILE, isLoggedIn: false };
   saveUserProfile(defaultProfile);
   return defaultProfile;
@@ -297,6 +333,37 @@ export const markEducationCompleted = (eduId: string): string[] => {
   return current;
 };
 
+// 5b. Bookmarked Education Storage Operations
+const BOOKMARKED_EDU_KEY = 'sirkula_bookmarked_education';
+
+export const getBookmarkedEducation = (): string[] => {
+  if (!isBrowser) return [];
+  try {
+    const data = localStorage.getItem(BOOKMARKED_EDU_KEY);
+    return safeJsonParse<string[]>(data, []);
+  } catch (e) {
+    return [];
+  }
+};
+
+export const toggleBookmarkedEducation = (eduId: string): string[] => {
+  const current = getBookmarkedEducation();
+  const updated = current.includes(eduId)
+    ? current.filter((id) => id !== eduId)
+    : [...current, eduId];
+  if (isBrowser) {
+    try {
+      localStorage.setItem(BOOKMARKED_EDU_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new Event('storage'));
+    } catch (e) {}
+  }
+  return updated;
+};
+
+export const isEducationBookmarked = (eduId: string): boolean => {
+  return getBookmarkedEducation().includes(eduId);
+};
+
 // 6. Notifications Storage Operations
 export const INITIAL_NOTIFICATIONS: SmartNotification[] = [
   {
@@ -450,7 +517,6 @@ export const updateUserPassword = (email: string, newPassword: string): { succes
     return { success: false, message: 'Akun dengan email ini tidak ditemukan.' };
   }
 
-  users[userIndex].password = newPassword;
   if (isBrowser) {
     try {
       localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));

@@ -1,0 +1,179 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  COLLECTOR
+  ADMIN
+}
+
+enum BookingStatus {
+  CREATED
+  CONFIRMED
+  EN_ROUTE
+  COMPLETED
+  CANCELLED
+}
+
+enum WasteCategory {
+  PLASTIK_PET
+  KERTAS_KARDUS
+  LOGAM_KALENG
+  KACA
+  ORGANIK
+  ELEKTRONIK
+  LAINNYA
+}
+
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  passwordHash     String
+  fullName         String
+  role             Role              @default(STUDENT)
+  campus           String?           @default("ITS Sukolilo")
+  kosAddress       String?
+  phone            String?
+  avatarUrl        String?
+  points           Int               @default(0)
+  level            Int               @default(1)
+  totalRecycledKg  Float             @default(0.0)
+  co2SavedKg       Float             @default(0.0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  scans            WasteScan[]
+  bookings         Booking[]         @relation("UserBookings")
+  assignedBookings Booking[]         @relation("CollectorBookings")
+  badges           UserBadge[]
+  notifications    Notification[]
+  quizSubmissions  QuizSubmission[]
+
+  @@map("users")
+}
+
+model Badge {
+  id             String      @id @default(cuid())
+  slug           String      @unique
+  title          String
+  description    String
+  iconName       String?
+  category       String      @default("Pencapaian")
+  requiredPoints Int         @default(0)
+  createdAt      DateTime    @default(now())
+
+  users          UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id         String   @id @default(cuid())
+  userId     String
+  badgeId    String
+  unlockedAt DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge      Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model WasteScan {
+  id                  String        @id @default(cuid())
+  userId              String?
+  category            WasteCategory @default(PLASTIK_PET)
+  categoryLabel       String        @default("Plastik PET")
+  itemName            String
+  confidence          Float         @default(0.95)
+  recycleability      String        @default("Tinggi")
+  estimatedPricePerKg Int           @default(3500)
+  estimatedWeightKg   Float         @default(0.5)
+  earnedPoints        Int           @default(50)
+  co2SavedKg          Float         @default(0.75)
+  imageUrl            String?
+  sortingTips         String[]      @default([])
+  createdAt           DateTime      @default(now())
+
+  user                User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("waste_scans")
+}
+
+model DropPoint {
+  id                 String   @id @default(cuid())
+  name               String
+  category           String   @default("Bank Sampah Unit")
+  address            String
+  campusRegion       String   @default("ITS Sukolilo")
+  latitude           Float
+  longitude          Float
+  phone              String
+  operatingHours     String   @default("Senin - Sabtu, 08:00 - 16:00")
+  acceptedCategories String[] @default([])
+  rating             Float    @default(4.8)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("drop_points")
+}
+
+model Booking {
+  id                String        @id @default(cuid())
+  bookingCode       String        @unique // e.g. BOOK-2026-891
+  userId            String
+  collectorId       String?
+  wasteType         String
+  wasteCategories   String[]      @default([])
+  estimatedWeightKg Float         @default(1.0)
+  pickupDate        String
+  pickupTime        String
+  userAddress       String
+  addressDetail     String?
+  notes             String?
+  status            BookingStatus @default(CREATED)
+  pointsEarned      Int           @default(0)
+  resaleValue       Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user              User          @relation("UserBookings", fields: [userId], references: [id], onDelete: Cascade)
+  collector         User?         @relation("CollectorBookings", fields: [collectorId], references: [id], onDelete: SetNull)
+
+  @@map("bookings")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  category  String   @default("Sistem")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model QuizSubmission {
+  id          String   @id @default(cuid())
+  userId      String
+  quizTopic   String
+  score       Int
+  pointsAdded Int
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_submissions")
+}

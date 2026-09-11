@@ -6,7 +6,7 @@ import ScrollReveal from '../ui/ScrollReveal';
 
 export default function HeroSection() {
   return (
-    <section id="beranda" className="relative pt-6 pb-16 bg-transparent overflow-hidden border-b-2 border-[#1C4D38]/25">
+    <section id="beranda" className="relative pt-10 sm:pt-14 pb-16 bg-transparent overflow-hidden border-b-2 border-[#1C4D38]/25 scroll-mt-24">
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
 

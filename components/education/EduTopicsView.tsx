@@ -116,9 +116,8 @@ export default function EduTopicsView({
           <span className="text-[#1C4D38] font-black">Semua Topik</span>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-black text-[#1C4D38] font-display flex items-center gap-2">
-          <span>Semua Topik</span>
-          <span>📖</span>
+        <h2 className="text-xl sm:text-2xl font-black text-[#1C4D38] font-display">
+          Semua Topik
         </h2>
         <p className="text-xs text-[#1C4D38]/70 font-medium">
           Pilih topik yang ingin kamu pelajari. Setiap topik berisi berbagai materi edukasi menarik untuk menambah pengetahuanmu.
