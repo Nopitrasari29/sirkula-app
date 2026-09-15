@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import {
   RotateCcw,
@@ -30,13 +30,8 @@ export default function ScanResultView({ result, onScanAgain }: ScanResultViewPr
   const [activeModalBank, setActiveModalBank] = useState<BankSampahItem | null>(null);
   const { coords, getDistanceTo } = useGeolocation();
 
-  const itemName = result.name || result.itemName || 'Botol Plastik (PET)';
-  const categoryName = result.categoryName || result.category || 'Plastik';
-  const pricePerKg = result.estimatedPricePerKg || 2000;
-  const weightKg = result.estimatedWeightKg || 0.15;
-  const co2Saved = result.co2SavedKg || (weightKg * 3.0).toFixed(2);
-
-  const rawBankSampahList: BankSampahItem[] = [
+  // Bank Sampah terdekat — diambil dari /api/lokasi, fallback ke data statis
+  const FALLBACK_BANK_SAMPAH: BankSampahItem[] = [
     {
       id: 'bs-1',
       name: 'Bank Sampah Sukolilo',
@@ -98,6 +93,51 @@ export default function ScanResultView({ result, onScanAgain }: ScanResultViewPr
     },
   ];
 
+  const [rawBankSampahList, setRawBankSampahList] = useState<BankSampahItem[]>(FALLBACK_BANK_SAMPAH);
+
+  // Fetch bank sampah dari /api/lokasi saat mount
+  useEffect(() => {
+    const fetchLokasi = async () => {
+      try {
+        const params = coords
+          ? `?lat=${coords.lat}&lng=${coords.lng}`
+          : '';
+        const res = await fetch(`/api/lokasi${params}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          const mapped: BankSampahItem[] = data.data.slice(0, 3).map((loc: any) => ({
+            id: loc.id,
+            name: loc.name,
+            address: loc.address,
+            distance: loc.distanceKm ? `${loc.distanceKm} km` : '-',
+            timeEstimate: loc.distanceKm ? `${Math.ceil(loc.distanceKm / 0.3)} menit` : '-',
+            lat: loc.latitude || loc.lat,
+            lng: loc.longitude || loc.lng,
+            days: loc.operatingHours?.split(':')[0] || 'Senin - Sabtu',
+            hours: loc.operatingHours?.split(': ')[1] || '08.00 - 16.00',
+            rating: loc.rating || 4.5,
+            reviews: 50,
+            acceptedTypes: (loc.acceptedCategories || ['Plastik']).map((cat: string) => ({
+              name: cat.split(' ')[0],
+              color: 'bg-emerald-100',
+            })),
+            description: `Menerima: ${(loc.acceptedCategories || []).join(', ')}`,
+          }));
+          setRawBankSampahList(mapped);
+        }
+      } catch {
+        // Tetap pakai fallback statis
+      }
+    };
+    fetchLokasi();
+  }, [coords]);
+
+  const itemName = result.name || result.itemName || 'Botol Plastik (PET)';
+  const categoryName = result.categoryName || result.category || 'Plastik';
+  const pricePerKg = result.estimatedPricePerKg || 2000;
+  const weightKg = result.estimatedWeightKg || 0.15;
+  const co2Saved = result.co2SavedKg || (weightKg * 3.0).toFixed(2);
+
   const bankSampahList = useMemo(() => {
     const adapted = adaptLocationsToUser(rawBankSampahList, coords);
     return adapted.map((item) => {
@@ -108,7 +148,7 @@ export default function ScanResultView({ result, onScanAgain }: ScanResultViewPr
         timeEstimate: distInfo.timeEstimate,
       };
     });
-  }, [coords, getDistanceTo]);
+  }, [coords, getDistanceTo, rawBankSampahList]);
 
   const sortingSteps = [
     {

@@ -1,7 +1,13 @@
 import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 
-const JWT_SECRET_STRING = process.env.JWT_SECRET || 'sirkula-production-secret-key-2026-secure-jwt-token-its';
+// Guard: di production, JWT_SECRET WAJIB diisi via environment variable
+// Jika tidak, token bisa dipalsukan karena fallback terekspos di source code
+const JWT_SECRET_STRING =
+  process.env.JWT_SECRET ||
+  (process.env.NODE_ENV === 'production'
+    ? (() => { throw new Error('JWT_SECRET environment variable wajib diisi di production!'); })()
+    : 'sirkula-dev-only-fallback-jwt-secret-do-not-use-in-production');
 const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
 
 export interface TokenPayload {

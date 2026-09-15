@@ -51,6 +51,24 @@ export default function ScannerPage() {
     // Save scan to user history & add points automatically in storage
     saveScanToHistory(newScanResult);
 
+    // Sync scan ke backend API (fire-and-forget) — dicatat di Prisma DB
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('sirkula_auth_token');
+      fetch('/api/scanner', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          itemName: newScanResult.itemName || newScanResult.name,
+          category: newScanResult.category,
+          imageUrl: newScanResult.imageUrl || '',
+          estimatedWeightKg: newScanResult.estimatedWeightKg || 0.5,
+        }),
+      }).catch((err) => console.warn('Backend scanner sync:', err));
+    }
+
     setActiveResult(newScanResult);
     setScanState('result');
   };

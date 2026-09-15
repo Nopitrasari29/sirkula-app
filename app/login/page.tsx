@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, KeyRound, X } from 'lucide-react';
-import { validateLogin, registerUser, getRegisteredUsers, updateUserPassword } from '@/lib/utils/storage';
+import { getRegisteredUsers, saveUserProfile, registerUser } from '@/lib/utils/storage';
+import { apiClient } from '@/lib/services/apiClient';
 import AlertModal from '@/components/ui/AlertModal';
 
 export default function LoginPage() {
@@ -61,8 +62,13 @@ export default function LoginPage() {
       return;
     }
 
-    // Set demo password and trigger notification
-    updateUserPassword(cleanEmail, 'Sirkula123!');
+    // Demo: Reset password via API (fire-and-forget), lalu isi form login
+    fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: cleanEmail, newPassword: 'Sirkula123!' }),
+    }).catch(() => {}); // Ignore error — demo mode only
+
     setIsForgotModalOpen(false);
     setPassword('Sirkula123!');
     setEmail(cleanEmail);
@@ -70,12 +76,12 @@ export default function LoginPage() {
       isOpen: true,
       type: 'success',
       title: 'Reset Password Berhasil!',
-      message: `Tautan reset telah dikirim ke ${cleanEmail}. Untuk simulasi cepat lomba, password sementara akun Anda telah direset menjadi: "Sirkula123!". Password telah otomatis diisikan ke formulir masuk.`,
+      message: `Untuk simulasi cepat, password sementara akun Anda telah direset menjadi: "Sirkula123!". Password telah otomatis diisikan ke formulir masuk.`,
       confirmText: 'Masuk Sekarang',
     });
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
@@ -91,36 +97,96 @@ export default function LoginPage() {
 
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      // Autentikasi via backend API (bcrypt password check)
+      const result = await apiClient.auth.login({ email: email.trim(), password });
+
       setIsLoading(false);
 
-      // Validate credentials against registered users database
-      const result = validateLogin(email, password);
-
       if (!result.success) {
+        const errMsg = result.message || 'Email atau password salah.';
         setModalState({
           isOpen: true,
           type: 'error',
           title: 'Gagal Masuk',
-          message: result.message,
-          confirmText: result.message.includes('belum terdaftar') ? 'Daftar Sekarang' : 'Coba Lagi',
-          onConfirmRedirect: result.message.includes('belum terdaftar') ? '/register' : undefined,
+          message: errMsg,
+          confirmText: errMsg.includes('belum terdaftar') ? 'Daftar Sekarang' : 'Coba Lagi',
+          onConfirmRedirect: errMsg.includes('belum terdaftar') ? '/register' : undefined,
         });
         return;
       }
 
-      // Login successful -> redirect to Dashboard
+      // Simpan profil user dari respons API ke localStorage untuk UI
+      const userData = (result as any).user;
+      if (userData) {
+        saveUserProfile({
+          id: userData.id,
+          name: userData.name || userData.fullName,
+          email: userData.email,
+          role: userData.role || 'Mahasiswa Kos',
+          campus: userData.campus || '',
+          kosAddress: userData.kosAddress || '',
+          phone: userData.phone || '',
+          points: userData.points ?? 0,
+          level: userData.level ?? 1,
+          totalRecycledKg: userData.totalRecycledKg ?? 0,
+          co2SavedKg: userData.co2SavedKg ?? 0,
+          badges: userData.badges ?? [],
+          isLoggedIn: true,
+        });
+      }
+
+      // Token sudah disimpan otomatis oleh apiClient.auth.login()
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('storage'));
+      }
+
+      // Login berhasil → redirect ke Dashboard
       router.push('/dashboard');
-    }, 700);
+    } catch (err) {
+      setIsLoading(false);
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: 'Gagal Terhubung ke Server',
+        message: 'Tidak dapat terhubung ke server SIRKULA. Periksa koneksi internet Anda.',
+        confirmText: 'Coba Lagi',
+      });
+    }
   };
 
-  const handleGoogleLogin = () => {
-    // Quick Demo Mode: Automatically registers & logs in Google Demo Account
-    registerUser({
-      fullName: 'Pengguna Google',
-      email: 'user.google@gmail.com',
-      password: 'google_demo_password',
-    });
+  const handleGoogleLogin = async () => {
+    // Demo Mode: Daftarkan akun Google demo via backend (tanpa password plaintext)
+    setIsLoading(true);
+    try {
+      const result = await apiClient.auth.register({
+        fullName: 'Pengguna Google',
+        email: 'user.google@gmail.com',
+      });
+      const userData = (result as any).user;
+      if (userData) {
+        saveUserProfile({
+          id: userData.id || `google-demo-${Date.now()}`,
+          name: userData.name || 'Pengguna Google',
+          email: userData.email || 'user.google@gmail.com',
+          role: 'Mahasiswa Kos',
+          campus: userData.campus || 'ITS Sukolilo',
+          kosAddress: '',
+          points: userData.points ?? 120,
+          level: userData.level ?? 1,
+          totalRecycledKg: 0,
+          co2SavedKg: 0,
+          badges: [],
+          isLoggedIn: true,
+        });
+      }
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
+    } catch {
+      // Fallback: daftarkan lokal saja
+      registerUser({ fullName: 'Pengguna Google', email: 'user.google@gmail.com' });
+    } finally {
+      setIsLoading(false);
+    }
     router.push('/dashboard');
   };
 
@@ -323,8 +389,50 @@ export default function LoginPage() {
           {/* Quick Demo Mode for Competition Evaluator */}
           <button
             type="button"
-            onClick={() => {
-              validateLogin('fika@sirkula.id', 'Sirkula123!');
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                const demoResult = await apiClient.auth.login({ email: 'fika@sirkula.id', password: 'Sirkula123!' });
+                const demoUser = (demoResult as any).user;
+                if (demoUser) {
+                  saveUserProfile({
+                    id: demoUser.id || 'demo-fika',
+                    name: demoUser.name || 'Rafika Az Zahra',
+                    email: demoUser.email || 'fika@sirkula.id',
+                    role: demoUser.role || 'Mahasiswa Kos',
+                    campus: demoUser.campus || 'ITS Sukolilo',
+                    kosAddress: demoUser.kosAddress || '',
+                    phone: demoUser.phone || '',
+                    points: demoUser.points ?? 126,
+                    level: demoUser.level ?? 3,
+                    totalRecycledKg: demoUser.totalRecycledKg ?? 14.5,
+                    co2SavedKg: demoUser.co2SavedKg ?? 28.2,
+                    badges: demoUser.badges ?? [],
+                    isLoggedIn: true,
+                  });
+                }
+                if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
+              } catch {
+                // Fallback jika backend offline — set profil demo lokal
+                saveUserProfile({
+                  id: 'demo-fika-local',
+                  name: 'Rafika Az Zahra',
+                  email: 'fika@sirkula.id',
+                  role: 'Mahasiswa Kos',
+                  campus: 'ITS Sukolilo',
+                  kosAddress: 'Jl. Gebang Wetan No. 12',
+                  phone: '081234567890',
+                  points: 126,
+                  level: 3,
+                  totalRecycledKg: 14.5,
+                  co2SavedKg: 28.2,
+                  badges: [],
+                  isLoggedIn: true,
+                });
+                if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
+              } finally {
+                setIsLoading(false);
+              }
               router.push('/dashboard');
             }}
             className="w-full py-2.5 bg-[#D6E6C5]/60 hover:bg-[#D6E6C5] border border-[#1C4D38]/20 text-[#1C4D38] font-black text-xs rounded-xl shadow-2xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"

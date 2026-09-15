@@ -227,6 +227,28 @@ export const createBooking = (newBookingData: Omit<BookingItem, 'id' | 'createdA
     time: 'Baru saja',
   });
 
+  // Sync ke backend API (fire-and-forget) — data booking masuk ke Prisma DB
+  if (isBrowser) {
+    const token = localStorage.getItem('sirkula_auth_token');
+    fetch('/api/booking', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        wasteType: newBooking.wasteType,
+        wasteCategories: newBooking.wasteCategories || [],
+        estimatedWeightKg: newBooking.estimatedWeightKg,
+        pickupDate: newBooking.pickupDate,
+        pickupTime: newBooking.pickupTime || newBooking.pickupTimeSlot,
+        userAddress: newBooking.userAddress || newBooking.addressDetail,
+        addressDetail: newBooking.addressDetail,
+        notes: newBooking.notes,
+      }),
+    }).catch((err) => console.warn('Backend booking sync:', err));
+  }
+
   if (isBrowser) {
     window.dispatchEvent(new Event('storage'));
   }

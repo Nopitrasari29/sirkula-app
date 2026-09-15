@@ -110,6 +110,25 @@ export default function SettingsPage() {
 
     saveUserProfile(updatedProfile);
 
+    // Sync profil ke backend API (fire-and-forget)
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('sirkula_auth_token');
+      fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          campus: currentUser.campus,
+          kosAddress: kosAddress.trim(),
+          phone: phone.trim(),
+          avatarUrl: avatarUrl,
+        }),
+      }).catch((err) => console.warn('Backend profile sync:', err));
+    }
+
     // Trigger local storage event for cross-component update
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('storage'));

@@ -125,6 +125,21 @@ export default function EdukasiPage() {
       addPoints(50, 0);
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('storage'));
+
+        // Sync quiz score ke backend API
+        const token = localStorage.getItem('sirkula_auth_token');
+        fetch('/api/edu/quiz/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            quizTopic: 'Kuis Harian Pemilahan Sampah',
+            score,
+            totalQuestions: QUIZ_QUESTIONS.length,
+          }),
+        }).catch((err) => console.warn('Backend quiz sync:', err));
       }
       setRewardToast(`Hebat! Kamu meraih skor ${score}/100 pada Kuis Harian & mendapatkan +50 Poin SIRKULA.`);
       setTimeout(() => {

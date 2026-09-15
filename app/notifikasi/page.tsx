@@ -14,7 +14,24 @@ export default function NotificationPage() {
   const [activeTab, setActiveTab] = useState<string>('Semua');
   const [notifications, setNotifications] = useState<SmartNotification[]>([]);
 
-  const loadNotifications = () => {
+  const loadNotifications = async () => {
+    // API-first: coba ambil dari backend, fallback ke localStorage
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('sirkula_auth_token') : null;
+      if (token) {
+        const res = await fetch('/api/notifications', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setNotifications(data.data);
+          return;
+        }
+      }
+    } catch {
+      // fallback ke localStorage
+    }
+    // Fallback: baca dari localStorage
     const list = getNotifications();
     setNotifications(list);
   };
