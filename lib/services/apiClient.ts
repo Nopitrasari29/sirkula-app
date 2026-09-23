@@ -11,13 +11,21 @@ class ApiClient {
 
   public setToken(token: string) {
     if (typeof window !== 'undefined') {
+      // Simpan ke localStorage (untuk client-side reads)
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      // Simpan ke cookie (untuk middleware server-side auth guard)
+      // SameSite=Strict + Secure untuk keamanan
+      const isSecure = window.location.protocol === 'https:';
+      const cookieStr = `sirkula_auth_token=${token}; path=/; SameSite=Strict${isSecure ? '; Secure' : ''}`;
+      document.cookie = cookieStr;
     }
   }
 
   public removeToken() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
+      // Hapus cookie juga
+      document.cookie = 'sirkula_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
     }
   }
 

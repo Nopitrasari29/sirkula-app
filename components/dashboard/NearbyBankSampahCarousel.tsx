@@ -5,10 +5,25 @@ import { MapPin, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useGeolocation, GPS_STORAGE_KEY } from '@/hooks/useGeolocation';
 
+interface LokasiItem {
+  id: string;
+  titleLine1: string;
+  titleLine2: string;
+  distance: string;
+  img: string;
+}
+
+const FALLBACK_LOKASI: LokasiItem[] = [
+  { id: 'bs-1', titleLine1: 'Bank Sampah', titleLine2: 'Sukolilo', distance: '1,2 km', img: '/assets/illustrations/bank-sampah-icon.png' },
+  { id: 'bs-2', titleLine1: 'Bank Sampah', titleLine2: 'Keputih', distance: '2,4 km', img: '/assets/illustrations/bank-sampah-icon.png' },
+];
+
 export default function NearbyBankSampahCarousel() {
   const { coords } = useGeolocation();
   const [districtName, setDistrictName] = useState('Terdekat');
+  const [bankSampahList, setBankSampahList] = useState<LokasiItem[]>(FALLBACK_LOKASI);
 
+  // Update district name dari GPS coords
   useEffect(() => {
     const updateDistrict = () => {
       try {
@@ -22,10 +37,7 @@ export default function NearbyBankSampahCarousel() {
               .replace(' (Simulasi)', '')
               .trim();
             const district = clean.split(',')[0].trim();
-            if (district) {
-              setDistrictName(district);
-              return;
-            }
+            if (district) { setDistrictName(district); return; }
           }
         }
       } catch (e) {}
@@ -50,22 +62,31 @@ export default function NearbyBankSampahCarousel() {
     };
   }, [coords]);
 
-  const bankSampahList = [
-    {
-      id: 'bs-1',
-      titleLine1: 'Bank Sampah',
-      titleLine2: districtName,
-      distance: coords?.accuracy ? '0,8 km' : '1,2 km',
-      img: '/assets/illustrations/bank-sampah-icon.png',
-    },
-    {
-      id: 'bs-2',
-      titleLine1: 'Bank Sampah',
-      titleLine2: 'Mitra Wilayah',
-      distance: coords?.accuracy ? '2,4 km' : '3,5 km',
-      img: '/assets/illustrations/bank-sampah-icon.png',
-    },
-  ];
+  // Fetch 2 bank sampah terdekat dari /api/lokasi
+  useEffect(() => {
+    const fetchLokasi = async () => {
+      try {
+        const params = coords ? `?lat=${coords.lat}&lng=${coords.lng}` : '';
+        const res = await fetch(`/api/lokasi${params}`);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          const top2 = data.data.slice(0, 2).map((loc: any, idx: number) => ({
+            id: loc.id || `api-${idx}`,
+            titleLine1: 'Bank Sampah',
+            titleLine2: loc.name?.replace('Bank Sampah ', '').trim() || districtName,
+            distance: loc.distanceKm ? `${loc.distanceKm} km` : '- km',
+            img: '/assets/illustrations/bank-sampah-icon.png',
+          }));
+          setBankSampahList(top2);
+        }
+      } catch {
+        // Tetap gunakan fallback
+      }
+    };
+
+    fetchLokasi();
+  }, [coords, districtName]);
 
   return (
     <div className="space-y-3">
@@ -76,22 +97,21 @@ export default function NearbyBankSampahCarousel() {
         </h2>
       </div>
 
-      {/* Main Container Card (Dikunci Lebarnya dengan max-w-3xl Sesuai Figma) */}
+      {/* Main Container Card */}
       <div className="max-w-3xl bg-[#FAF3E5]/70 backdrop-blur-md border border-[#1C4D38]/10 rounded-[28px] p-4 sm:p-5 space-y-3 shadow-xs">
 
         {/* Carousel Content Row */}
         <div className="flex items-center justify-between gap-3 sm:gap-6">
 
-          {/* 2 Locations Grid dengan Garis Sekat Vertikal */}
+          {/* 2 Locations Grid */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-0 items-center">
             {bankSampahList.map((item, idx) => (
               <Link
                 key={item.id}
-                href="/lokasi"
-                className={`flex items-center gap-3.5 group transition-transform ${idx === 0 ? 'sm:border-r sm:border-[#1C4D38]/15 sm:pr-6' : 'sm:pl-6'
-                  }`}
+                href="/bank-sampah"
+                className={`flex items-center gap-3.5 group transition-transform ${idx === 0 ? 'sm:border-r sm:border-[#1C4D38]/15 sm:pr-6' : 'sm:pl-6'}`}
               >
-                {/* Illustration Image (Kompak Sesuai Figma) */}
+                {/* Illustration Image */}
                 <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
                   <img
                     src={item.img}
@@ -100,7 +120,7 @@ export default function NearbyBankSampahCarousel() {
                   />
                 </div>
 
-                {/* Info Text (2 Baris Pas Sesuai Figma) */}
+                {/* Info Text */}
                 <div className="space-y-1 min-w-0">
                   <h3 className="text-sm sm:text-base font-black text-[#1C4D38] font-display leading-tight group-hover:text-[#143929] transition">
                     {item.titleLine1} <br />
@@ -117,7 +137,7 @@ export default function NearbyBankSampahCarousel() {
 
           {/* Right Chevron Arrow Icon */}
           <Link
-            href="/lokasi"
+            href="/bank-sampah"
             className="p-1 text-[#1C4D38] hover:opacity-75 transition shrink-0 hidden sm:block pr-1"
             title="Lihat Lebih Banyak Bank Sampah"
           >
@@ -126,7 +146,7 @@ export default function NearbyBankSampahCarousel() {
 
         </div>
 
-        {/* Carousel Pagination Dots (Mustard Gold Circles Sesuai Figma) */}
+        {/* Carousel Pagination Dots */}
         <div className="flex justify-center items-center gap-2 pt-0.5">
           <span className="w-2.5 h-2.5 rounded-full bg-[#D9A74E] scale-110" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#D9A74E]/35" />

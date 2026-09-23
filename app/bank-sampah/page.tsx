@@ -13,7 +13,8 @@ import GpsLocationDetectorBar from '@/components/map/GpsLocationDetectorBar';
 import { useGeolocation, adaptLocationsToUser } from '@/hooks/useGeolocation';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 
-const BANK_SAMPAH_DATA: BankSampahItem[] = [
+// Data fallback statis — digunakan jika /api/lokasi tidak tersedia
+const FALLBACK_BANK_SAMPAH_DATA: BankSampahItem[] = [
   {
     id: 'bs-1',
     name: 'Bank Sampah Sukolilo',
@@ -147,7 +148,8 @@ export default function BankSampahPage() {
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [selectedDistance, setSelectedDistance] = useState('Semua Jarak');
   const [selectedHours, setSelectedHours] = useState('Semua');
-  const [selectedBank, setSelectedBank] = useState<BankSampahItem>(BANK_SAMPAH_DATA[0]);
+  const [bankSampahData, setBankSampahData] = useState<BankSampahItem[]>(FALLBACK_BANK_SAMPAH_DATA);
+  const [selectedBank, setSelectedBank] = useState<BankSampahItem>(FALLBACK_BANK_SAMPAH_DATA[0]);
   const [detailModalBank, setDetailModalBank] = useState<BankSampahItem | null>(null);
 
   // 📍 Live Geolocation / GPS Hook
@@ -162,9 +164,49 @@ export default function BankSampahPage() {
     getDistanceTo,
   } = useGeolocation();
 
+  // 🌐 Fetch data bank sampah dari /api/lokasi (API-first + fallback statis)
+  useEffect(() => {
+    const fetchBankSampah = async () => {
+      try {
+        const params = coords ? `?lat=${coords.lat}&lng=${coords.lng}` : '';
+        const res = await fetch(`/api/lokasi${params}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          const mapped: BankSampahItem[] = data.data.map((loc: any) => ({
+            id: loc.id,
+            name: loc.name,
+            address: loc.address,
+            distance: loc.distanceKm ? `${loc.distanceKm} km` : '- km',
+            timeEstimate: loc.distanceKm ? `${Math.ceil(loc.distanceKm / 0.3)} menit` : '-',
+            days: loc.operatingHours ? loc.operatingHours.split(',')[0]?.trim() : 'Senin - Sabtu',
+            hours: loc.operatingHours ? loc.operatingHours.split(', ')[1]?.trim() || '08.00 - 16.00' : '08.00 - 16.00',
+            rating: loc.rating || 4.5,
+            reviews: loc.reviews || 50,
+            acceptedTypes: (loc.acceptedCategories || ['Plastik', 'Kertas']).map((cat: string) => ({
+              name: cat.split(' ')[0],
+              color: cat.includes('Plastik') ? 'bg-amber-100'
+                : cat.includes('Kertas') ? 'bg-purple-100'
+                : cat.includes('Logam') ? 'bg-emerald-100'
+                : cat.includes('Kaca') ? 'bg-blue-100'
+                : 'bg-cyan-100',
+            })),
+            description: `Menerima: ${(loc.acceptedCategories || []).join(', ')}. ${loc.phone ? 'Telp: ' + loc.phone : ''}`.trim(),
+            lat: loc.latitude,
+            lng: loc.longitude,
+          }));
+          setBankSampahData(mapped);
+          setSelectedBank(mapped[0]);
+        }
+      } catch {
+        // Tetap gunakan FALLBACK_BANK_SAMPAH_DATA yang sudah di-set sebagai initial state
+      }
+    };
+    fetchBankSampah();
+  }, [coords]);
+
   // 📐 Recalculate dynamic distance & timeEstimate based on user coords, sort closest first
   const enrichedBankData = useMemo(() => {
-    const localizedData = adaptLocationsToUser(BANK_SAMPAH_DATA, coords);
+    const localizedData = adaptLocationsToUser(bankSampahData, coords);
     return localizedData.map((item) => {
       const distInfo = getDistanceTo(item.lat || -7.2825, item.lng || 112.7944);
       return {
@@ -174,7 +216,7 @@ export default function BankSampahPage() {
         _numericDistance: distInfo.km,
       };
     }).sort((a, b) => a._numericDistance - b._numericDistance);
-  }, [coords, getDistanceTo]);
+  }, [bankSampahData, coords, getDistanceTo]);
 
   // 🔍 Real Dynamic Filter Logic via useMemo
   const filteredData = useMemo(() => {

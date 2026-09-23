@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { User, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { registerUser } from '@/lib/utils/storage';
+import { saveUserProfile } from '@/lib/utils/storage';
+import { apiClient } from '@/lib/services/apiClient';
 import AlertModal from '@/components/ui/AlertModal';
 
 export default function RegisterPage() {
@@ -32,7 +33,7 @@ export default function RegisterPage() {
     type: 'warning',
   });
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!fullName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
@@ -70,38 +71,72 @@ export default function RegisterPage() {
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-
-      // Register new user into the browser database
-      const result = registerUser({
+    try {
+      // Daftar via backend API (bcrypt hash + simpan ke DB)
+      const result = await apiClient.auth.register({
         fullName: fullName.trim(),
         email: email.trim(),
-        password: password,
+        password,
       });
+
+      setIsLoading(false);
 
       if (!result.success) {
         setModalState({
           isOpen: true,
           type: 'error',
           title: 'Pendaftaran Gagal',
-          message: result.message,
+          message: result.message || 'Email mungkin sudah terdaftar.',
           confirmText: 'Masuk Sekarang',
           onConfirmRedirect: '/login',
         });
         return;
       }
 
-      // Success modal pop-up before redirect
+      // Simpan profil dari respons server (poin welcome, level, id riil)
+      const userData = (result as any).user;
+      if (userData) {
+        saveUserProfile({
+          id: userData.id,
+          name: userData.name || userData.fullName || fullName.trim(),
+          email: userData.email || email.trim(),
+          role: userData.role || 'Mahasiswa Kos',
+          campus: userData.campus || 'ITS Sukolilo',
+          kosAddress: userData.kosAddress || '',
+          phone: userData.phone || '',
+          points: userData.points ?? 120,
+          level: userData.level ?? 1,
+          totalRecycledKg: userData.totalRecycledKg ?? 0,
+          co2SavedKg: userData.co2SavedKg ?? 0,
+          badges: userData.badges ?? [],
+          isLoggedIn: true,
+        });
+      }
+
+      // Token sudah disimpan otomatis oleh apiClient.auth.register()
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('storage'));
+      }
+
+      // Success modal → redirect ke dashboard
       setModalState({
         isOpen: true,
         type: 'success',
         title: 'Pendaftaran Berhasil!',
-        message: 'Selamat datang di SIRKULA! Akun Anda telah berhasil dibuat.',
+        message: 'Selamat datang di SIRKULA! Akun Anda telah berhasil dibuat. Kamu mendapat 120 Poin Selamat Datang! 🎉',
         confirmText: 'Masuk ke Dashboard',
         onConfirmRedirect: '/dashboard',
       });
-    }, 700);
+    } catch (err) {
+      setIsLoading(false);
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: 'Gagal Terhubung ke Server',
+        message: 'Tidak dapat terhubung ke server SIRKULA. Periksa koneksi internet Anda dan coba lagi.',
+        confirmText: 'Coba Lagi',
+      });
+    }
   };
 
   return (
