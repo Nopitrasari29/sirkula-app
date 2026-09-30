@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import ClientLayout from '../components/layout/ClientLayout';
+import GoogleProvider from '../components/providers/GoogleProvider';
 
 export const metadata: Metadata = {
   title: 'SIRKULA — Menutup Lingkaran Sampah, dari Rumah ke Pengepul',
@@ -16,7 +17,11 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="id">
       <head>
@@ -28,8 +33,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           crossOrigin=""
         />
       </head>
+
       <body className="min-h-screen flex flex-col bg-[#F7F8F3] text-emerald-950 antialiased selection:bg-emerald-800 selection:text-white">
-        <ClientLayout>{children}</ClientLayout>
+        <GoogleProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </GoogleProvider>
       </body>
     </html>
   );
