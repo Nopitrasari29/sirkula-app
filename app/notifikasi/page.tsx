@@ -8,6 +8,7 @@ import { ChevronLeft, Calendar, CheckSquare, Settings, Bell, Sparkles, Award, Bo
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { getNotifications, markAllNotificationsRead, markNotificationRead, deleteNotification } from '@/lib/utils/storage';
 import { SmartNotification } from '@/lib/types';
+import { apiClient } from '@/lib/services/apiClient';
 
 export default function NotificationPage() {
   const isAuthorized = useAuthGuard();
@@ -17,16 +18,10 @@ export default function NotificationPage() {
   const loadNotifications = async () => {
     // API-first: coba ambil dari backend, fallback ke localStorage
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('sirkula_auth_token') : null;
-      if (token) {
-        const res = await fetch('/api/notifications', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          setNotifications(data.data);
-          return;
-        }
+      const res = await apiClient.notifications.getAll();
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setNotifications(res.data);
+        return;
       }
     } catch {
       // fallback ke localStorage

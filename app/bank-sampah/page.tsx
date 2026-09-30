@@ -178,8 +178,8 @@ export default function BankSampahPage() {
             address: loc.address,
             distance: loc.distanceKm ? `${loc.distanceKm} km` : '- km',
             timeEstimate: loc.distanceKm ? `${Math.ceil(loc.distanceKm / 0.3)} menit` : '-',
-            days: loc.operatingHours ? loc.operatingHours.split(',')[0]?.trim() : 'Senin - Sabtu',
-            hours: loc.operatingHours ? loc.operatingHours.split(', ')[1]?.trim() || '08.00 - 16.00' : '08.00 - 16.00',
+            days: (loc.operatingHours ? loc.operatingHours.split(',')[0]?.trim() : '') || 'Senin - Sabtu',
+            hours: (loc.operatingHours ? loc.operatingHours.split(', ')[1]?.trim() : '') || '08.00 - 16.00',
             rating: loc.rating || 4.5,
             reviews: loc.reviews || 50,
             acceptedTypes: (loc.acceptedCategories || ['Plastik', 'Kertas']).map((cat: string) => ({
@@ -256,10 +256,11 @@ export default function BankSampahPage() {
         const currentDayName = DAY_NAMES[now.getDay()];
 
         const isDayOpen = (() => {
-          if (item.days.includes('Minggu') && item.days.includes('Senin')) return true;
-          if (item.days.includes('Senin - Sabtu')) return now.getDay() >= 1 && now.getDay() <= 6;
-          if (item.days.includes('Senin - Jumat')) return now.getDay() >= 1 && now.getDay() <= 5;
-          return item.days.toLowerCase().includes(currentDayName.toLowerCase());
+          const itemDays = item.days || 'Senin - Sabtu';
+          if (itemDays.includes('Minggu') && itemDays.includes('Senin')) return true;
+          if (itemDays.includes('Senin - Sabtu')) return now.getDay() >= 1 && now.getDay() <= 6;
+          if (itemDays.includes('Senin - Jumat')) return now.getDay() >= 1 && now.getDay() <= 5;
+          return itemDays.toLowerCase().includes(currentDayName.toLowerCase());
         })();
 
         if (selectedHours === 'Buka Hari Ini') {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
+import { jwtVerify } from 'jose/jwt/verify';
 
 // Routes yang memerlukan autentikasi (prefix matching)
 const PROTECTED_ROUTES = [
@@ -12,6 +12,7 @@ const PROTECTED_ROUTES = [
   '/edukasi',
   '/notifikasi',
   '/settings',
+  '/lokasi',
   '/leaderboard',
   '/profile',
 ];

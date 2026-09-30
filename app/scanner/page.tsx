@@ -13,6 +13,7 @@ import { RotateCcw } from 'lucide-react';
 import { saveScanToHistory } from '@/lib/utils/storage';
 import { WasteScanResult } from '@/lib/types';
 import { classifyWasteImage } from '@/lib/logic/classifyWaste';
+import { apiClient } from '@/lib/services/apiClient';
 
 export default function ScannerPage() {
   const isAuthorized = useAuthGuard();
@@ -52,22 +53,14 @@ export default function ScannerPage() {
     saveScanToHistory(newScanResult);
 
     // Sync scan ke backend API (fire-and-forget) — dicatat di Prisma DB
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('sirkula_auth_token');
-      fetch('/api/scanner', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          itemName: newScanResult.itemName || newScanResult.name,
-          category: newScanResult.category,
-          imageUrl: newScanResult.imageUrl || '',
-          estimatedWeightKg: newScanResult.estimatedWeightKg || 0.5,
-        }),
-      }).catch((err) => console.warn('Backend scanner sync:', err));
-    }
+    apiClient.scanner
+      .recordScan({
+        itemName: newScanResult.itemName || newScanResult.name,
+        category: newScanResult.category,
+        imageUrl: newScanResult.imageUrl || '',
+        estimatedWeightKg: newScanResult.estimatedWeightKg || 0.5,
+      })
+      .catch((err) => console.warn('Backend scanner sync:', err));
 
     setActiveResult(newScanResult);
     setScanState('result');

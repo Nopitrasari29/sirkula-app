@@ -99,6 +99,8 @@ export const registerUser = (userData: { fullName: string; email: string; passwo
       .then((data) => {
         if (data && data.token) {
           localStorage.setItem('sirkula_auth_token', data.token);
+          const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+          document.cookie = `sirkula_auth_token=${data.token}; path=/; SameSite=Strict${isSecure ? '; Secure' : ''}`;
         }
       })
       .catch((err) => console.warn('Backend sync (register):', err));
@@ -140,6 +142,8 @@ export const validateLogin = (emailInput: string, passwordInput: string): { succ
       .then((data) => {
         if (data && data.token) {
           localStorage.setItem('sirkula_auth_token', data.token);
+          const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+          document.cookie = `sirkula_auth_token=${data.token}; path=/; SameSite=Strict${isSecure ? '; Secure' : ''}`;
         }
       })
       .catch((err) => console.warn('Backend sync (login):', err));
@@ -172,6 +176,7 @@ export const saveUserProfile = (profile: UserProfile): void => {
 export const logoutUser = (): UserProfile => {
   if (isBrowser) {
     localStorage.removeItem('sirkula_auth_token');
+    document.cookie = 'sirkula_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
   }
   const defaultProfile = { ...INITIAL_USER_PROFILE, isLoggedIn: false };
   saveUserProfile(defaultProfile);
